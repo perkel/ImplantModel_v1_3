@@ -42,6 +42,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['Gradual80R75']
 # scenarios = ['Uniform80R05']
 # scenarios = ['Uniform100R05', 'Uniform100R10', 'Uniform100R15']
+scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']  # Used for Fig 3
 # scenarios = ['Ramp80Rvariable1']
 # scenarios = ['RampRpos_revSGradual80']
 # scenarios = ['Rpos-03S0_4']
@@ -65,7 +66,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # Actual subject data. For inverse model only
 # scenarios = ['S40', 'S42']  # paper "good fit" examples. Figure 7
 # scenarios = ['S29', 'S56']  # paper "poor fit" examples. Figure 8
-scenarios = ['S56']
+# scenarios = ['S56']
 # all subjects with CT data
 # scenarios = ['S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
 #              'S55', 'S56', 'S57']
