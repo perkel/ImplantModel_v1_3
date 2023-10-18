@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import pickle
 from common_params import *
 import fig_2D_contour
-import PlotNeuronActivation
+import plot_neuron_activation
 
 # We depend on a voltage and activation tables calculated using
 # voltage_calc.py and saved as a .dat file
@@ -67,13 +67,13 @@ OUTFILE = FWDOUTPUTDIR + 'FwdModelOutput_' + descrip + '.csv'
 
 # Additional setup
 COCHLEA['timestamp'] = datetime.datetime.now()
-ELECTRODES['timestamp'] = datetime.datetime.now()
+electrodes['timestamp'] = datetime.datetime.now()
 CHANNEL['timestamp'] = datetime.datetime.now()
 COCHLEA['radius'] = np.ones(NELEC) * fp['cylRadius']  # rpos is in mm, so be sure they fit inside the radius
 
 # Construct the simParams structure
 simParams['cochlea'] = COCHLEA
-simParams['electrodes'] = ELECTRODES
+simParams['electrodes'] = electrodes
 simParams['channel'] = CHANNEL
 simParams['grid'] = GRID
 
@@ -185,5 +185,5 @@ if ifPlot:
     # ax3.set(xlabel='Survival fraction', ylabel='Threshold tripolar (dB)', title=titleText)
 
     fig_2D_contour.fig_2D_contour()
-    PlotNeuronActivation.PlotNeuronActivation()
+    plot_neuron_activation.plot_neuron_activation()
     plt.show()

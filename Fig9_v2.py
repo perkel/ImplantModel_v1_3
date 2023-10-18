@@ -33,7 +33,6 @@ def fig9_summary():
         rpos_vals[i, :] = rpos_summary[i][1]
 
     # get detailed data from the CSV summary file
-    dummy__ = 0.0
     summary_csv_file_name = INVOUTPUTDIR + 'summary_inverse_fit_results.csv'
     with open(summary_csv_file_name, mode='r') as data_file:
         entire_file = csv.reader(data_file, delimiter=',', quotechar='"')
@@ -41,14 +40,13 @@ def fig9_summary():
             if row == 0:  # skip header row
                 pass
             else:
-                [dummy__, thresh_err_summary[row-1, 0], thresh_err_summary[row-1, 1],
+                [_, thresh_err_summary[row-1, 0], thresh_err_summary[row-1, 1],
                  rpos_err_summary[row-1], dist_corr[row-1], dist_corr_p[row-1]] = row_data
 
         data_file.close()
 
     # Loop on scenarios again. Compute pairwise mean absolute position error
     mean_errs = np.zeros([nscen, nscen])
-    median_errors = np.zeros((nscen, nscen))
     corr_vals = np.zeros([nscen, nscen])
     corr_p = np.zeros([nscen, nscen])
 
@@ -60,16 +58,10 @@ def fig9_summary():
             corr_vals[i, j] = dist_corr
             corr_p[i, j] = dist_corr_p
 
-    # now we have the matrix. Let's plot a histogram of all the values
-    a = mean_errs.flatten()
-    mean = np.mean(a)
-    std = np.std(a)
+    # now we have the matrix. Let's plot a histogram of all the diagonal values
     diag = np.diag(mean_errs)
     diag_cr = np.diag(corr_vals)
 
-    # widths = [3, 1, 1, 1]
-    # gs_kw = dict(width_ratios=widths)
-    # fig1, axs1 = plt.subplots(2, 2, gridspec_kw=gs_kw, figsize=(8, 4))
     fig1, axs1 = plt.subplots(2, 2, figsize=(8, 6), width_ratios=[2, 1])
     fig1.tight_layout(pad=3)
 
@@ -208,7 +200,7 @@ def fig9_summary():
     axs1[1, 0].plot([start_pt, end_pt], [(start_pt*slope) + intercept, (end_pt*slope) + intercept], 'black')
 
     # statistics
-    res = stats.linregress(x, y)
+    # res = stats.linregress(x, y)
 
     # Save and display
     figname = INVOUTPUTDIR + 'Fig_fit_summary.pdf'

@@ -4,9 +4,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import scipy.stats as stats
 from common_params import *  # import common values across all models
-import subject_data
 
 
 def summary_four_subjects(subjects, f_name, unsupervised):
@@ -21,15 +19,12 @@ def summary_four_subjects(subjects, f_name, unsupervised):
     l_e = NELEC - 1  # last electrode to plot
 
     for i, subject in enumerate(subjects):
-        ct_vals = subject_data.subj_ct_data(subject)
-
         data_filename = INVOUTPUTDIR + subject + '_fitResults_' + 'combined.npy'
-        [sigma_vals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals],
-         rposerrs, rpos_err_metric, survivalerrs, ct_vals] = np.load(data_filename, allow_pickle=True)
+        [_, _, _, thrsim, thrtargs, _, [fitrposvals, fitsurvvals],
+         _, rpos_err_metric, _, ct_vals] = np.load(data_filename, allow_pickle=True)
 
         # Make plots
-        inner = gridspec.GridSpecFromSubplotSpec(3, 1,
-                    subplot_spec=outer[i], wspace=0.1, hspace=0.15)
+        inner = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=outer[i], wspace=0.1, hspace=0.15)
 
         # All on one plot
         ax = plt.Subplot(fig, inner[0])
@@ -43,8 +38,6 @@ def summary_four_subjects(subjects, f_name, unsupervised):
         ax.plot(xvals[1:l_e]+0.1, thrsim[1][0][1:l_e], marker='o', color='pink', label='fit TP')
         ax.plot(xvals[1:l_e]-0.1, thrtargs[1][0][1:l_e], marker='o', color='red', label='measured TP')
         yl = 'Thresh. (dB)'
-        mean_thr_err = (np.nanmean(np.abs(np.array(thrsim[0])-np.array(thrtargs[0]))) +
-                        np.nanmean(np.abs(np.array(thrsim[1])-np.array(thrtargs[1]))))/2.0
         title_text = 'Subject: ' + subject
         # ax.set(xlabel='Electrode number', ylabel=yl, title=title_text)
         ax.set_ylabel(yl, fontsize=8)
@@ -56,16 +49,13 @@ def summary_four_subjects(subjects, f_name, unsupervised):
         ax.set_yticks([35, 45, 55, 65])
         # ax.legend(loc='upper right', ncol=2)
 
-        [dist_corr, dist_corr_p] = stats.pearsonr(1 - ct_vals, 1 - fitrposvals)
-        title_text = 'Fit and actual positions; mean position error (mm): ' + '%.2f' % rpos_err_metric
-
         fig.add_subplot(ax)
-
         ax = plt.Subplot(fig, inner[1])
         ax.plot(xvals[1:l_e]+0.1, 1 - fitrposvals[1:l_e], marker='o', color='gray', label='fit')
         if np.any(ct_vals):
             ax.plot(xvals-0.1, 1 - ct_vals, marker='o', color='black', label='CT estimate')
-            # ax.fill_between(xvals-0.1, (1 - ct_vals) - ct_uncertainty, (1 - ct_vals) + ct_uncertainty, color='black', alpha=0.1)
+            # ax.fill_between(xvals-0.1, (1 - ct_vals) - ct_uncertainty, (1 - ct_vals) + ct_uncertainty,
+            # color='black', alpha=0.1)
 
         # ax.plot(xvals, 1 - initvec[0:NELEC], marker='o', color='purple', label='initial guess')
         # ax.set(xlabel='Electrode number', ylabel='Dist. (mm)')
@@ -89,18 +79,16 @@ def summary_four_subjects(subjects, f_name, unsupervised):
         ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
 
 
-        #ax.legend()
+        # ax.legend()
         # fig_consol.tight_layout()
         fig.add_subplot(ax)
-        # # -- could add plots of error (difference between desired/measured and fitted values)
-        #
+        # could add plots of error (difference between desired/measured and fitted values)
         if save_fig:
             save_file_name = INVOUTPUTDIR + f_name + '.png'
             fig.savefig(save_file_name)
             save_file_name = INVOUTPUTDIR + f_name + '.eps'
             fig.savefig(save_file_name, format='eps')
 
-        #
         # # test correlation figure
         # if not use_fwd_model:
         #     fig2, ax2 = plt.subplots()

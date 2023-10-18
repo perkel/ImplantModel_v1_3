@@ -30,17 +30,17 @@ import load_fwd_csv_data as lcsv
 import surv_full
 import get_thresholds as gt
 import subject_data
-import PlotInverseResults
+import plot_inverse_results
 from common_params import *  # import common values across all models
 
 # User adjustable parameters
 fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 'rpos' or 'survival'
 allow_vary_rext = False
 ifPlot = True  # Whether to plot output at end
-unsupervised = False  # Makes & saves summary plots but does not display them and wait for user input before proceeding
+unsupervised = True  # Makes & saves summary plots but does not display them and wait for user input before proceeding
 ifPlotGuessContours = True  # Option to plot initial guesses for parameters given to the fitting algorithm
-use_fwd_model = False  # If True, use output from the forward model. If False, use subject data
-fit_tol = 0.01  # Fit tolerance for subject fits
+use_fwd_model = True  # If True, use output from the forward model. If False, use subject data
+fit_tol = 0.1  # Fit tolerance for subject fits
 use_minimizer = True  # If true, uses the wrapper around scipy optimize. Otherwise vanilla scipy.minimize
 
 
@@ -57,7 +57,7 @@ def objectivefunc_lmfit(p, sigvals, sim_params, f_par, e_field, thr_goals, this_
     print('tempsurv = ', tempsurv)
 
     sim_params['neurons']['nsurvival'] = surv_full.surv_full(sim_params['electrodes']['zpos'],
-                                                           tempsurv, simParams['grid']['z'])
+                                                             tempsurv, simParams['grid']['z'])
 
     # Call for monopolar then tripolar
     sim_params['channel']['sigma'] = sigvals[0]
@@ -97,7 +97,7 @@ def objectivefunc_lmfit_all(par, sigvals, sim_params, f_par, e_field, thr_goals)
         tempsurv[i] = myvalue
 
     sim_params['neurons']['nsurvival'] = surv_full.surv_full(sim_params['electrodes']['zpos'],
-                                                           tempsurv, simParams['grid']['z'])
+                                                             tempsurv, simParams['grid']['z'])
 
     # Call for monopolar then tripolar
     sim_params['channel']['sigma'] = sigvals[0]
@@ -117,7 +117,7 @@ def objectivefunc_lmfit_all(par, sigvals, sim_params, f_par, e_field, thr_goals)
     # because they can't be calculated
     if show_retval:  # helpful for debugging
         scen = simParams['run_info']['scenario']
-        print('subj/scen: ', scen, '; tempsurv[4] = ', '%.3f' % tempsurv[4], '; rpos[4]= ',
+        print('subj/scen: ', scen, '; tempsurv[4] = ', '%.3f' % np.array_str(tempsurv[4]), '; rpos[4]= ',
               '%.3f' % sim_params['electrodes']['rpos'][4],
               '; Mean abs error (dB) = ', '%.3f' % mean_error, '; Max error (dB) = ',
               '%.3f' % np.nanmax(np.abs(retval)))
@@ -134,7 +134,7 @@ def objectivefunc_minimize_all(par, sigvals, sim_params, f_par, e_field, thr_goa
     sim_params['electrodes']['rpos'] = par[0:nel]
     tempsurv = par[nel:]
     sim_params['neurons']['nsurvival'] = surv_full.surv_full(sim_params['electrodes']['zpos'],
-                                                           tempsurv, simParams['grid']['z'])
+                                                             tempsurv, simParams['grid']['z'])
 
     # Call for monopolar then tripolar
     sim_params['channel']['sigma'] = sigvals[0]
@@ -233,6 +233,9 @@ def inverse_model_combined_se():  # Start this script
     # to see if there is more than one solution
     surv_grid_vals = np.arange(0.04, 0.97, 0.02)
     rpos_grid_vals = np.arange(-0.95, 0.96, 0.02)
+    act_vals = []
+    n_elec_pos = 0
+    n_z_pos = 0
 
     # Open field data and load data
     if allow_vary_rext:
@@ -247,6 +250,7 @@ def inverse_model_combined_se():  # Start this script
 
             fptemp = data[0]
             fptemp['zEval'] = np.array(fptemp['zEval'])
+            fp = []
             if i == 0:
                 fp = fptemp
                 n_elec_pos = len(fptemp['relec'])
@@ -295,12 +299,13 @@ def inverse_model_combined_se():  # Start this script
             [survvals, rposvals] = s_scen.set_scenario(scenario, NELEC)
             csv_file = FWDOUTPUTDIR + 'FwdModelOutput_' + scenario + '.csv'
             [thr_data, ct_data] = lcsv.load_fwd_csv_data(csv_file)
+            subject = []
         else:  # use threshold data from a subject
-            SUBJECT = scenario
-            ELECTRODES['rpos'] = np.zeros(NELEC)
-            rposvals = ELECTRODES['rpos']
-            thr_data = {'thrmp_db': (subject_data.subj_thr_data(SUBJECT))[0], 'thrmp': [],
-                        'thrtp_db': (subject_data.subj_thr_data(SUBJECT))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
+            subject = scenario
+            electrodes['rpos'] = np.zeros(NELEC)
+            rposvals = electrodes['rpos']
+            thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
+                        'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
             thr_data['thrtp_db'] = np.insert(thr_data['thrtp_db'], 0, np.NaN)  # put NaNs at ends of array
             thr_data['thrtp_db'] = np.append(thr_data['thrtp_db'], np.NaN)
 
@@ -323,7 +328,7 @@ def inverse_model_combined_se():  # Start this script
             radius = 1.0
             ct_data['stdiameter'] = radius * 2.0 * (np.zeros(NELEC) + 1.0)
 
-        #  rposvals = ELECTRODES['rpos']  # save this for later
+        #  rposvals = electrodes['rpos']  # save this for later
         saverposvals = rposvals
 
         cochlea_radius = ct_data['stdiameter'] / 2.0
@@ -342,7 +347,7 @@ def inverse_model_combined_se():  # Start this script
 
         # Construct the simParams structure
         simParams['cochlea'] = COCHLEA
-        simParams['electrodes'] = ELECTRODES
+        simParams['electrodes'] = electrodes
         simParams['channel'] = CHANNEL
         simParams['channel']['sigma'] = 0.0
         thresholds = np.empty(NELEC)  # Array to hold threshold data for different simulation values
@@ -583,8 +588,8 @@ def inverse_model_combined_se():  # Start this script
                     (0.05, 0.95), (0.05, 0.95), (0.05, 0.95), (0.05, 0.95), (0.05, 0.95), (0.05, 0.95),
                     (0.05, 0.95), (0.05, 0.95))
             result = opt.minimize(objectivefunc_minimize_all, initvec, args=(sigmaVals, simParams, fp, act_vals,
-                                        thr_data), method='SLSQP', jac=None, bounds=bnds, options={'ftol': fit_tol})
-
+                                                                             thr_data), method='SLSQP', jac=None,
+                                  bounds=bnds, options={'ftol': fit_tol})
 
             # store the results in the right place
             print('minimize finished. Message is: ', result.message)
@@ -607,7 +612,7 @@ def inverse_model_combined_se():  # Start this script
 
         simParams['electrodes']['rpos'] = fitrposvals
         simParams['neurons']['nsurvival'] = surv_full.surv_full(simParams['electrodes']['zpos'], fitsurvvals,
-                                                              simParams['grid']['z'])
+                                                                simParams['grid']['z'])
         simParams['channel']['sigma'] = sigmaVals[0]
         thrsimmp = gt.get_thresholds(act_vals, fp, simParams)
         simParams['channel']['sigma'] = sigmaVals[1]
@@ -636,7 +641,7 @@ def inverse_model_combined_se():  # Start this script
             # Save values in CSV format
             save_file_name = INVOUTPUTDIR + scenario + '_fitResults_' + 'combined.csv'
         else:
-            ct_vals = subject_data.subj_ct_data(SUBJECT)
+            ct_vals = subject_data.subj_ct_data(subject)
             survivalerrs = np.empty(NELEC)
 
             if np.any(ct_vals):
@@ -652,7 +657,7 @@ def inverse_model_combined_se():  # Start this script
 
             ##
             # Save values in CSV format
-            save_file_name = INVOUTPUTDIR + SUBJECT + '_fitResults_' + 'combined.csv'
+            save_file_name = INVOUTPUTDIR + subject + '_fitResults_' + 'combined.csv'
             # [survvals, rposvals] = s_scen.set_scenario(scenario, NELEC)
 
         # Save the data for this scenario
@@ -706,14 +711,14 @@ def inverse_model_combined_se():  # Start this script
             if use_fwd_model:
                 txt_string = scenario
             else:
-                txt_string = SUBJECT
+                txt_string = subject
             PlotInverseResults.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
 
         # Save individual subject file
         # scenario, threshold error metric, and for CT cases: rpos error matric
         # print('saving this subject\'s fit data in CSV form')
         # if not use_fwd_model:
-        #     summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_' + SUBJECT + '_data.csv'
+        #     summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_' + subject + '_data.csv'
         #     with open(summary_file_name, mode='w') as data_file:
         #         data_writer = csv.writer(data_file, delimiter=',', quotechar='"')
         #         header = ['Subject', 'Electrode', 'MP Threshold', 'Fitted MP Threshold', 'TP Threshold', 'Fitted TP Threshold',
@@ -748,12 +753,14 @@ def inverse_model_combined_se():  # Start this script
         data_writer.writerow(header)
         for row in range(num_scen):
             if use_fwd_model:
-                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
-                                      '%.3f' % thresh_err_summary[row, 1], '%.3f' % rpos_err_summary[row]])
+                data_writer.writerow([scenarios[row], '%.3f' % np.array_str(thresh_err_summary[row, 0]),
+                                      '%.3f' % np.array_str(thresh_err_summary[row, 1]),
+                                      '%.3f' % np.array_str(rpos_err_summary[row])])
             else:
-                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
-                                      '%.3f' % thresh_err_summary[row, 1], '%.3f' % rpos_err_summary[row],
-                                      '%.3f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
+                data_writer.writerow([scenarios[row], '%.3f' % np.array_str(thresh_err_summary[row, 0]),
+                                      '%.3f' % np.array_str(thresh_err_summary[row, 1]),
+                                      '%.3f' % np.array_str(rpos_err_summary[row]),
+                                      '%.3f' % np.array_str(dist_corr[row]), '%.5f' % np.array_str(dist_corr_p[row])])
         data_file.close()
 
     # save summary binary data file

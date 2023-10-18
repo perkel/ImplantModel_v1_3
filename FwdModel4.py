@@ -54,7 +54,7 @@ nSig = len(sigmaVals)
 # print(scenarios)
 
 for scenario in scenarios:
-    [survVals, ELECTRODES['rpos']] = s_scen.set_scenario(scenario, NELEC)
+    [survVals, electrodes['rpos']] = s_scen.set_scenario(scenario, NELEC)
 
     if not os.path.isdir(FWDOUTPUTDIR):
         os.makedirs(FWDOUTPUTDIR)
@@ -68,7 +68,7 @@ for scenario in scenarios:
 
     # Construct the simParams structure
     simParams['cochlea'] = COCHLEA
-    simParams['electrodes'] = ELECTRODES
+    simParams['electrodes'] = electrodes
     simParams['channel'] = CHANNEL
     simParams['grid'] = GRID
     simParams['run_info'] = RUN_INFO
@@ -106,7 +106,7 @@ for scenario in scenarios:
     with open(OUTFILE, mode='w') as data_file:
         data_writer = csv.writer(data_file, delimiter=',', quotechar='"')
         for row in range(0, NELEC):
-            data_writer.writerow([row, survVals[row], ELECTRODES['rpos'][row], thr_sim_db[row, 0], thr_sim_db[row, 1]])
+            data_writer.writerow([row, survVals[row], electrodes['rpos'][row], thr_sim_db[row, 0], thr_sim_db[row, 1]])
     data_file.close()
 
     # Save simParams

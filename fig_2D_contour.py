@@ -11,6 +11,7 @@ from common_params import *
 import shapely as shap
 
 
+# noinspection PyUnusedLocal
 def fig_2D_contour():
     # this is an option to search systematically for unique or multiple solutions for a given set of
     # monopolar and tripolar threshold values
@@ -79,15 +80,15 @@ def fig_2D_contour():
     m_min = np.min(znew_mp)
     m_max = np.max(znew_mp)
 
-    f_interp = interpolate.interp2d(rp_curt, surv_vals, tripol_thr[:, 0:-2])
+    # f_interp = interpolate.interp2d(rp_curt, surv_vals, tripol_thr[:, 0:-2])
+    f_interp = interpolate.RectBivariateSpline(rp_curt, surv_vals, tripol_thr[:, 0:-2].transpose())
     znew_tp = f_interp(xnew, ynew)
     t_min = np.min(znew_tp)
     t_max = np.max(znew_tp)
 
-    all_min = np.min([t_min, m_min])
-    all_max = np.max([t_max, m_max])
-
-    # rounding manually
+    # all_min = np.min([t_min, m_min])  # if we want to do this automatically
+    # all_max = np.max([t_max, m_max])
+    # rounding manually for figure
     all_min = 25.0
     all_max = 85.0
     n_levels = 6
@@ -96,7 +97,7 @@ def fig_2D_contour():
     fig, axs = plt.subplots(2, 2, figsize=(8, 8))
     fig.tight_layout(pad=3, w_pad=2, h_pad=2.0)
     if filled_contours:
-        CS3 = axs[0, 0].contourf(1 - rpos_vals, surv_vals, mono_thr,
+        cs3 = axs[0, 0].contourf(1 - rpos_vals, surv_vals, mono_thr,
                                  np.arange(all_min, all_max, (all_max - all_min) / n_levels),
                                  cmap='viridis', extend='both')
         low_rpos_val = -0.5
@@ -145,7 +146,7 @@ def fig_2D_contour():
         axs[0, 1].plot([1 - high_rpos_val, 1 - high_rpos_val], [np.min(surv_vals), np.max(surv_vals)], color='gray')
         axs[0, 1].set_xticks([0.4, 0.8, 1.2, 1.6])
     else:
-        CS3 = axs[0, 0].contour(1 - rpos_vals, surv_vals, mono_thr,
+        cs3 = axs[0, 0].contour(1 - rpos_vals, surv_vals, mono_thr,
                                 np.arange(all_min, all_max, (all_max - all_min) / n_levels), colors='k')
 
         # This custom formatter removes trailing zeros, e.g. "1.0" becomes "1", and
@@ -157,7 +158,7 @@ def fig_2D_contour():
             return rf"{s} dB" if plt.rcParams["text.usetex"] else f"{s} dB"
 
         manual_locations = [(0.3, 0.6), (1.0, 0.6), (1.0, 0.2), (1.2, 0.05)]
-        axs[0, 0].clabel(CS3, CS3.levels, inline=True, fmt=fmt, fontsize=10, manual=manual_locations)
+        axs[0, 0].clabel(cs3, cs3.levels, inline=True, fmt=fmt, fontsize=10, manual=manual_locations)
         low_rpos_val = -0.5
         high_rpos_val = 0.5
         low_surv_val = 0.4
@@ -347,7 +348,7 @@ def fig_2D_contour():
         solmap_file = FWDOUTPUTDIR + 'solution_map' + STD_TEXT
         np.savez(solmap_file, surv_vals, rpos_vals, n_sols)
         fig_nsols, ax_nsols = plt.subplots()
-        cs_nsols = ax_nsols.contour(rpos_vals, surv_vals, n_sols, [1, 2])
+        ax_nsols.contour(rpos_vals, surv_vals, n_sols, [1, 2])
 
     plt.show()
 

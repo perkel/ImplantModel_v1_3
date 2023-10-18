@@ -11,22 +11,19 @@ def plot_inverse_results(use_fwd_model, txt_string, unsupervised):
     # Key constants to set
     save_fig = True
 
+    # Open file and load data
     if use_fwd_model:
         print('error -- this is for subject fits')
         scenario = txt_string
+        data_filename = INVOUTPUTDIR + scenario + '_fitResults_' + 'combined.npy'
+        [_, rposvals, survvals, thrsim, thrtargs, _, [fitrposvals, fitsurvvals],
+         _, rpos_err_metric, _] = np.load(data_filename, allow_pickle=True)
     else:
         subject = txt_string[0]
         ct_vals = subject_data.subj_ct_data(subject)
-
-    # Open file and load data
-    if use_fwd_model:
-        data_filename = INVOUTPUTDIR + scenario + '_fitResults_' + 'combined.npy'
-        [sigma_vals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals],
-         rposerrs, rpos_err_metric, survivalerrs] = np.load(data_filename, allow_pickle=True)
-    else:
         data_filename = INVOUTPUTDIR + subject + '_fitResults_' + 'combined.npy'
-        [sigma_vals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals],
-         rposerrs, rpos_err_metric, survivalerrs, ct_vals] = np.load(data_filename, allow_pickle=True)
+        [_, rposvals, survvals, thrsim, thrtargs, _, [fitrposvals, fitsurvvals],
+         _, rpos_err_metric, _, ct_vals] = np.load(data_filename, allow_pickle=True)
 
     # Make plots
     xvals = np.arange(0, NELEC) + 1
@@ -43,12 +40,9 @@ def plot_inverse_results(use_fwd_model, txt_string, unsupervised):
     axs[0, 0].plot(xvals[1:l_e]+0.1, thrsim[1][0][1:l_e], marker='o', color='pink', label='fit TP')
     axs[0, 0].plot(xvals[1:l_e]-0.1, thrtargs[1][0][1:l_e], marker='o', color='red', label='measured TP')
     yl = 'Threshold (dB)'
-    mean_thr_err = (np.nanmean(np.abs(np.array(thrsim[0])-np.array(thrtargs[0]))) +
-                    np.nanmean(np.abs(np.array(thrsim[1])-np.array(thrtargs[1]))))/2.0
-    if use_fwd_model:
-        title_text = 'Known scenario thresholds: ' + scenario + '; mean thr error (dB): ' + '%.2f' % mean_thr_err
-    else:
-        title_text = 'Subject thresholds: ' + subject + '; mean thr error (dB): ' + '%.2f' % mean_thr_err
+    # mean_thr_err = (np.nanmean(np.abs(np.array(thrsim[0])-np.array(thrtargs[0]))) +
+    #                 np.nanmean(np.abs(np.array(thrsim[1])-np.array(thrtargs[1]))))/2.0
+
     axs[0, 0].set(ylabel=yl)
     axs[0, 0].set_xlim(0, 17)
     axs[0, 0].set_ylim(33, 67)
@@ -56,7 +50,6 @@ def plot_inverse_results(use_fwd_model, txt_string, unsupervised):
     axs[0, 0].set_yticks([35, 45, 55, 65])
     axs[0, 0].legend(loc='upper right', ncol=2)
 
-    title_text = 'Fit and actual positions; mean position error (mm): ' + '%.2f' % rpos_err_metric
     axs[1, 0].plot(xvals[1:l_e]+0.1, 1 - fitrposvals[1:l_e], marker='o', color='gray', label='fit')
     if use_fwd_model:
         axs[1, 0].plot(xvals[1:l_e]-0.1, 1 - rposvals[1:l_e], marker='o', color='black', label='actual')
@@ -89,19 +82,13 @@ def plot_inverse_results(use_fwd_model, txt_string, unsupervised):
     subject = txt_string[1]
     data_filename = INVOUTPUTDIR + subject + '_fitResults_' + 'combined.npy'
     [sigma_vals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals],
-     rposerrs, rpos_err_metric, survivalerrs, ct_vals] = np.load(data_filename, allow_pickle=True)
+     rposerrs, rpos_err_metric, _, ct_vals] = np.load(data_filename, allow_pickle=True)
     axs[0, 1].plot(xvals+0.1, thrsim[0][0], marker='o', color='lightblue', label='fit MP')
     axs[0, 1].plot(xvals-0.1, thrtargs[0][0], marker='o', color='blue', label='measured MP')
     axs[0, 1].plot(xvals[1:l_e]+0.1, thrsim[1][0][1:l_e], marker='o', color='pink', label='fit TP')
     axs[0, 1].plot(xvals[1:l_e]-0.1, thrtargs[1][0][1:l_e], marker='o', color='red', label='measured TP')
-    yl = 'Threshold (dB)'
     mean_thr_err = (np.nanmean(np.abs(np.array(thrsim[0])-np.array(thrtargs[0]))) +
                     np.nanmean(np.abs(np.array(thrsim[1])-np.array(thrtargs[1]))))/2.0
-    if use_fwd_model:
-        title_text = 'Known scenario thresholds: ' + scenario + '; mean thr error (dB): ' + '%.2f' % mean_thr_err
-    else:
-        title_text = 'Subject thresholds: ' + subject + '; mean thr error (dB): ' + '%.2f' % mean_thr_err
-    # axs[0, 1].set(xlabel='Electrode number', ylabel=yl)
     axs[0, 1].set_xlim(0, 17)
     axs[0, 1].set_ylim(33, 67)
     axs[0, 1].set_xticklabels([])
@@ -147,8 +134,6 @@ def plot_inverse_results(use_fwd_model, txt_string, unsupervised):
         fig_consol.savefig(save_file_name)
         save_file_name = INVOUTPUTDIR + txt_string[0] + txt_string[1] + '_fitResultsFig_' + 'combined.eps'
         fig_consol.savefig(save_file_name, format='eps')
-
-
 
     if not unsupervised:
         plt.show()
