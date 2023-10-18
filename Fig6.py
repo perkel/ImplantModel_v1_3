@@ -4,14 +4,11 @@
 import matplotlib.pyplot as plt
 
 from common_params import *  # import common values across all models
-import subject_data
 
 
 def fig_scenario_inverse_results():
     # Key constants to set
-    use_fwd_model = True
-    if use_fwd_model:
-        figscenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']
+    figscenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']
 
     # All on one plot
     figrows = 3
@@ -31,13 +28,7 @@ def fig_scenario_inverse_results():
         data_filename = INVOUTPUTDIR + scenario + '_fitResults_' + 'combined.npy'
 
         data = np.load(data_filename, allow_pickle=True)
-        if use_fwd_model:
-            [sigmaVals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals], rposerrs,
-             rpos_err_metric, survivalerr] = data
-        else:
-            [sigmaVals, rposvals, survvals, thrsim, thrtargs, initvec, [fitrposvals, fitsurvvals], rposerrs,
-             rpos_err_metric, survivalerrs, ct_vals] = data
-
+        [_, rposvals, survvals, thrsim, thrtargs, _, [fitrposvals, fitsurvvals], _, _, _] = data
 
         # Make plots
         ax.plot(xvals[1:l_e] - 0.2, thrsim[1][0][1:l_e], marker='^', color='purple', label='TP fit')
@@ -96,8 +87,6 @@ def fig_scenario_inverse_results():
         max_density_error = np.max(np.abs(np.subtract(survvals, fitsurvvals)))
         print("scenario: ", scenario, " max mp, tp and dist and surv errors: ",
               max_mp_error, max_tp_error, max_dist_error, max_density_error)
-
-
 
     plt.show()
 
