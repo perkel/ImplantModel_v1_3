@@ -5,7 +5,7 @@ import numpy as np
 # Basic parameters
 NELEC = 16
 ELEC_BASALPOS = 30  # in mm
-ESPACE = 1.1  # in mm; 'ELECTRODE' parameters must be vectors
+ESPACE = 1.1  # in mm; 'electrode' parameters must be vectors
 
 # Neural activation parameters
 THRTARG = 100.0  # threshold number of active neurons
@@ -20,7 +20,7 @@ STD_TEXT = STD_TEXT.replace('.', '_')
 sigmaVals = [0, 0.9]  # Always explore monopolar stimulation and one value of sigma for triploar
 
 COCHLEA = {'source': 'manual', 'timestamp': [], 'radius': []}
-ELECTRODES = {'source': 'manual', 'timestamp': [], 'zpos': ELEC_BASALPOS - np.arange(NELEC - 1, -1, -1) * ESPACE,
+electrodes = {'source': 'manual', 'timestamp': [], 'zpos': ELEC_BASALPOS - np.arange(NELEC - 1, -1, -1) * ESPACE,
               'rpos': []}
 NEURONS = {'act_ctr': ACTR, 'act_stdrel': ACT_STDREL, 'nsurvival': [], 'sidelobe': 1.0, 'neur_per_clust': 10,
            'rlvl': [], 'rule': 'proportional', 'coef': 0.0, 'power': 1.0, 'thrTarg': THRTARG}
@@ -29,7 +29,7 @@ CHANNEL = {'source': 'manual', 'number': range(0, NELEC), 'config': 'pTP', 'sigm
            'current': 10000000000.0}
 GRID = {'r': 0.1, 'th': 0.0, 'z': np.arange(0, 33, 0.01)}  # mm
 RUN_INFO = {'scenario': 'scenario', 'run_time': [], 'run_duration': 0.0}
-simParams = {'cochlea': COCHLEA, 'electrodes': ELECTRODES, 'channel': CHANNEL, 'grid': GRID, 'neurons': NEURONS,
+simParams = {'cochlea': COCHLEA, 'electrodes': electrodes, 'channel': CHANNEL, 'grid': GRID, 'neurons': NEURONS,
              'run_info': RUN_INFO}
 
 nZ = len(GRID['z'])
@@ -52,7 +52,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['RampRpos2SGradual80']
 # scenarios = ['RampRposSOneHoleGradual80']
 
-# scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
+scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
 # scenarios = ['Gradual2_80R00']
 # scenarios = ['RampRposRampSurv']
 # scenarios = ['ExtremeHole']
@@ -65,7 +65,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # Actual subject data. For inverse model only
 # scenarios = ['S40', 'S42']  # paper "good fit" examples. Figure 7
 # scenarios = ['S29', 'S56']  # paper "poor fit" examples. Figure 8
-scenarios = ['S56']
+# scenarios = ['S56']
 # all subjects with CT data
 # scenarios = ['S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
 #              'S55', 'S56', 'S57']
