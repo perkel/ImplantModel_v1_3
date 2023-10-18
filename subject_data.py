@@ -76,8 +76,8 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array([32.5, 31.6, 28.8, 32.2, 36.1, 37.6, 42.3, 43.2, 41.1, 43.5, 45.2, 40.4,
                                          38.0, 30.8])
     elif subj == 'S48':
-        thr_data['thrmp_db'] = np.array([37.2, 37.2, 36.7, 36.0, 35.3, 35.5, 34.1, 34.7, 34.5, 35.3, 34.5, 34.6, 35.9, \
-                         35.0, 35.6, 35.6])
+        thr_data['thrmp_db'] = np.array([37.2, 37.2, 36.7, 36.0, 35.3, 35.5, 34.1, 34.7, 34.5, 35.3, 34.5, 34.6, 35.9,
+                                         35.0, 35.6, 35.6])
         thr_data['thrtp_db'] = np.array([52.7, 51.2, 49.7, 49.5, 47.4, 44.1, 40.8, 38.8, 41.7, 43.0, 45.1, 39.0,
                                          41.4, 44.9])
     elif subj == 'S49R':
@@ -130,6 +130,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
 
 
 def subj_ct_data(subj):  # returns ct data for a subject
+    ct_vals = []  # to suppress a warning
     if subj == 'S22':
         ct_vals = np.array([-0.534, -0.198, 0.200, 0.322, 0.242, -0.089, -0.315, -0.262, -0.224, -0.220, -0.336,
                             -0.283, -0.118, 0.084, 0.297, 0.427])
