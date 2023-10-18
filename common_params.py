@@ -42,6 +42,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['Gradual80R75']
 # scenarios = ['Uniform80R05']
 # scenarios = ['Uniform100R05', 'Uniform100R10', 'Uniform100R15']
+scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']  # Used for Fig 3
 # scenarios = ['Ramp80Rvariable1']
 # scenarios = ['RampRpos_revSGradual80']
 # scenarios = ['Rpos-03S0_4']
