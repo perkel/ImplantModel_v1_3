@@ -1,7 +1,7 @@
 # Which scripts generate the figures in Perkel, Goldwyn & Arenberg (2023)
 
 import Fig2_ActivationTables as f2
-import PlotNeuronActivation as f3
+import plot_neuron_activation as f3
 import fig_2D_contour as f4_5
 import Fig6 as f6
 import Figs_7_8 as f7_8
@@ -14,7 +14,7 @@ import Figs_supp as fs
 f2.fig2_activation_tables()
 
 # Fig 3
-f3.PlotNeuronActivation()
+f3.plot_neuron_activation()
 
 # Fig 4 & 5
 f4_5.fig_2D_contour()
