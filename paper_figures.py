@@ -30,6 +30,9 @@ unsupervised = False
 f7_8.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
 
 # Fig 9
+# NOTE: before funning this figure you will need to run the inverse model for all subjects
+# results will be saved in 'summary_inverse_fit_results.csv' and 'summary_inverse_fit_results.npy'
+# For now, each run of the inverse model overwrites the summary fit reults from the last one
 f9.fig9_summary()
 
 # Supplementary figures

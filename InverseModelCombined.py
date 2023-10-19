@@ -712,7 +712,7 @@ def inverse_model_combined_se():  # Start this script
                 txt_string = scenario
             else:
                 txt_string = subject
-            PlotInverseResults.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
+            plot_inverse_results.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
 
         # Save individual subject file
         # scenario, threshold error metric, and for CT cases: rpos error matric
@@ -736,14 +736,16 @@ def inverse_model_combined_se():  # Start this script
     s = io.StringIO()
     sortby = SortKey.CUMULATIVE
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-    # ps.print_stats(10)
-    # print(s.getvalue())
+    # ps.print_stats(10)  # if you want information from the profiler
 
-    # Save the data into a single file
     print('Completed inverse model on ', num_scen, ' scenarios in total time (s) of: ', ps.total_tt)
 
+    # Save the data into a single file
     # save summary data in a CSV file
     # scenario, threshold error metric, and for CT cases: rpos error matric
+    # TODO: provide more info on inverse fit type in summary filename
+    # Right now, each run of the inverse model overwrites the last summary. We should keep these results,
+    # and somehow identify them as subject or scenario or something in the filename.
     print('saving summary data in CSV form')
     summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_results.csv'
     with open(summary_file_name, mode='w') as data_file:
