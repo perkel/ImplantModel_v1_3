@@ -26,25 +26,7 @@
 # 3 to 1 based on interpolation to 'fieldParams.rspace' and the closest point to '.thspace'
 # (i.e. the latter is NOT by interpolation). The z-axis uses the vector 'simParams.grid.z'
 #  to linearly interpolate onto the table's z-axis specified in 'fieldParams.zspace'.
-#
-# REVISION HISTORY:
-# 2015.06.12. Profile constructions when sigma>0 now use common values for the Region 1
-# and Region 2 resistivities. This is implemented in the auxiliary function
-# CYLINDER3D_INTERPOLATE. Without this change, sudden shifts in resistivity between
-# neighboring electrodes could cause oddly shaped voltage profiles, because of the
-# large scaling difference between the positive and negative (center and flanking)
-# profile components. (Cochlear radius is already common to the center electrode, as seen
-# in the 'radscale' line below.)
-# 2015.08.25. There is now an option to leave 'fieldTable' empty, in which case
-# the output profile of this function will be based on a voltage table made
-# "on-the-fly". In this case, the table parameters are taken from 'fieldParams'.
-# This operation mode has advantages for 1) flexibility and 2) using exact
-# parameters rather than interpolating within a sparse parameter space.
-# 2017.02.06. Output now has the z-axis along the 1st matrix dimension, so that
-# the electrical field profile is a column vector.
-# 2020.02.08 Translated to python by David Perkel
-# 2020.08.15 Dramatically streamlined to deal with only a single 2-D activation table
-# Much simpler, if a bit less powerful
+
 
 import numpy as np
 
