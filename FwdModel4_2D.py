@@ -11,7 +11,7 @@
 # of electrode radial positions and neuron survival values. For each, it
 # calculates predicted threshold for monopolar and partial tripolar
 # stimulation, typically sigma = 0 and 0.9.
-# Re-written 12 August 2021 to simplify data structures into dicts.
+# Re-written 12 August 2021 to simplify data structures into dicts
 
 import surv_full
 import get_thresholds as gt

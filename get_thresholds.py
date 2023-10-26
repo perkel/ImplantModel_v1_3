@@ -1,3 +1,7 @@
+# get_thresholds.py version of 25 October 2023
+# Original code by Steven Bierer
+# Translated to python by David J. Perkel
+
 import numpy as np
 import thr_function as thr_f
 import cylinder3d_makeprofile as c3dm
