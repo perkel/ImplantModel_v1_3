@@ -9,7 +9,7 @@ from matplotlib.font_manager import findfont, FontProperties
 def plot_neuron_activation():
 
     # Note: to make this figure, you need to have run the forward model with these scenarios first
-    scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
+    # scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
 
     font = findfont(FontProperties(family=['sans-serif']))
     print('font is ', font)
