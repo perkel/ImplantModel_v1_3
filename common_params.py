@@ -53,12 +53,12 @@ scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']  # Used for Fig 3
 # scenarios = ['RampRpos2SGradual80']
 # scenarios = ['RampRposSOneHoleGradual80']
 
-scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
+# scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
 # scenarios = ['Gradual2_80R00']
 # scenarios = ['RampRposRampSurv']
 # scenarios = ['ExtremeHole']
 # scenarios = ['RampRposS80']
-# scenarios = ['RampRposSGradual80']
+scenarios = ['RampRposSGradual80']
 # scenarios = ['Checking_REXT_2500']
 # scenarios = ['CustomForECAPFigure']
 # scenarios = ['Step40_80R00']
