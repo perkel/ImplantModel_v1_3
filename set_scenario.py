@@ -28,6 +28,12 @@ def set_scenario(this_scen, n_elec):
         elif this_scen == 'Gradual50R00':
             surv_vals = [0.5, 0.5, 0.35, 0.2, 0.2, 0.35, 0.5, 0.5, 0.5, 0.35, 0.2, 0.2, 0.35, 0.5, 0.5, 0.5]
             rpos_vals = np.zeros(n_elec)
+        elif this_scen == 'Gradual07_02R00':
+            surv_vals = [0.7, 0.7, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35, 0.30, 0.25, 0.2, 0.2, 0.2, 0.2]
+            rpos_vals = np.zeros(n_elec)
+        elif this_scen == 'Gradual07_02UR00':
+            surv_vals = [0.7, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.7, 0.7]
+            rpos_vals = np.zeros(n_elec)
         elif this_scen == 'Sudden80R-05':
             surv_vals = [0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8]
             rpos_vals = np.zeros(n_elec) - 0.5
