@@ -18,6 +18,7 @@ STD_TEXT = STD_TEXT.replace('.', '_')
 
 # File locations
 sigmaVals = [0.5, 0.9]  # Always explore monopolar stimulation and one value of sigma for triploar
+# can be overridden for individual subjects
 
 COCHLEA = {'source': 'manual', 'timestamp': [], 'radius': []}
 electrodes = {'source': 'manual', 'timestamp': [], 'zpos': ELEC_BASALPOS - np.arange(NELEC - 1, -1, -1) * ESPACE,
@@ -68,7 +69,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # Actual subject data. For inverse model only
 # scenarios = ['S40', 'S42']  # paper "good fit" examples. Figure 7
 # scenarios = ['S29', 'S56']  # paper "poor fit" examples. Figure 8
-scenarios = ['A022L']
+scenarios = ['A002R', 'A014L', 'A022L', 'A022R', 'A023R', 'A024L']
 # all subjects with CT data
 # scenarios = ['S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
 #              'S55', 'S56', 'S57']

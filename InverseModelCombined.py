@@ -271,8 +271,11 @@ def inverse_model_combined_se():  # Start this script
             subject = scenario
             electrodes['rpos'] = np.zeros(NELEC)
             rposvals = electrodes['rpos']
-            thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
-                        'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
+            retval = subject_data.subj_thr_data(subject)
+            thr_data = {'thrmp_db': retval[0], 'thrmp': [], 'thrtp_db': retval[1], 'thrtp': [], 'thrtp_sigma': 0.9}
+            sigVals = retval[2]
+            # thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
+            #             'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
             thr_data['thrtp_db'] = np.insert(thr_data['thrtp_db'], 0, np.NaN)  # put NaNs at ends of array
             thr_data['thrtp_db'] = np.append(thr_data['thrtp_db'], np.NaN)
 
@@ -500,7 +503,7 @@ def inverse_model_combined_se():  # Start this script
                                fcn_args=(sigmaVals, simParams, fp, act_vals, thr_data))
 
             if use_fwd_model:
-                result = minner.minimize(method='Nelder-Mead', options = {'fatol': fit_tol, 'xatol': 0.01})
+                result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol, 'xatol': 0.01})
                 # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.02)
 
                 #  result = minner.minimize(method='leastsq')
