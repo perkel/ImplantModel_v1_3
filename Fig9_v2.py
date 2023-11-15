@@ -118,7 +118,8 @@ def fig9_summary():
 
     sns.swarmplot(diag_cr[signif], ax=axs1[1, 1], color='black')
     sns.swarmplot(diag_cr[near_signif], ax=axs1[1, 1], color='gray')
-    sns.swarmplot(diag_cr[not_signif], ax=axs1[1, 1], color='black', marker="$\circ$", ec="face", s=8)
+    # sns.swarmplot(diag_cr[not_signif], ax=axs1[1, 1], color='black', marker='$\circ$', ec="face", s=8)
+    sns.swarmplot(diag_cr[not_signif], ax=axs1[1, 1], color='black', marker='$\circ$', s=6)
 
     median_cr = np.median(diag_cr)
     iqrbar_cr = stats.iqr(diag_cr)/2.0
