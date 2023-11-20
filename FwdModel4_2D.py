@@ -111,7 +111,7 @@ for j, surv in enumerate(survVals):
     print('surv  ', j, ' of ', len(survVals))
     # Get survival values for all 330 clusters from the 16 values at electrode positions
     simParams['neurons']['nsurvival'] =\
-        surv_full.surv_full(simParams['electrodes']['zpos'], surv, simParams['grid']['z'])
+        surv_full.surv_full(simParams['electrodes']['zpos'], np.ones(NELEC)*surv, simParams['grid']['z'])
 
     for k, rpos in enumerate(rposVals):
         simParams['electrodes']['rpos'] = rpos
@@ -147,8 +147,16 @@ with open(OUTFILE, mode='w') as data_file:
 
 data_file.close()
 
-np.savetxt(FWDOUTPUTDIR + 'Monopolar_2D_' + STD_TEXT + '.csv', thr_sim_db[:, :, 0], delimiter=',')
-np.savetxt(FWDOUTPUTDIR + 'Tripolar_09_2D_' + STD_TEXT + '.csv', thr_sim_db[:, :, 1], delimiter=',')
+if espace == '0.85':
+    e_txt = '085'
+elif espace == 1.1:
+    e_txt = '110'
+else:
+    e_txt = 'xxx'
+es_text = '_espace_' + e_txt
+
+np.savetxt(FWDOUTPUTDIR + 'Monopolar_2D_' + STD_TEXT + es_text + '.csv', thr_sim_db[:, :, 0], delimiter=',')
+np.savetxt(FWDOUTPUTDIR + 'Tripolar_09_2D_' + STD_TEXT + es_text + '.csv', thr_sim_db[:, :, 1], delimiter=',')
 
 np.save(FWDOUTPUTDIR + 'simParams' + descrip, simParams)
 # Note that this is saving only the last simParams structure from the loops on sigma and in getThresholds.
@@ -162,7 +170,7 @@ print('max TP thr:  ', np.max(thr_sim_db[:, :, 1]))
 # Save neuron activation data into a binary file
 temp0 = [(survVals, rposVals)]
 temp1 = [temp0, neuronact]
-np.savez(FWDOUTPUTDIR + 'neuronact_' + STD_TEXT, survVals, rposVals, neuronact)
+np.savez(FWDOUTPUTDIR + 'neuronact_' + STD_TEXT + es_text, survVals, rposVals, neuronact)
 
 # Plot the results
 if ifPlot:

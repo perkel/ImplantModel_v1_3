@@ -38,7 +38,7 @@ fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 
 ifPlot = True  # Whether to plot output at end
 unsupervised = True  # Makes & saves summary plots but does not display them and wait for user input before proceeding
 ifPlotGuessContours = False  # Option to plot initial guesses for parameters given to the fitting algorithm
-use_fwd_model = False  # If True, use output from the forward model. If False, use subject data
+use_fwd_model = True  # If True, use output from the forward model. If False, use subject data
 fit_tol = 0.1  # Fit tolerance for subject fits
 use_minimizer = True  # If true, uses the lmfit wrapper around scipy optimize. Otherwise vanilla scipy.minimize
 
@@ -199,7 +199,18 @@ def inverse_model_combined_se():  # Start this script
     # Load monopolar data
     pr = cProfile.Profile()
     pr.enable()  # Start the profiler
-    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + ".csv"
+
+    if espace == '0.85':
+        e_txt = '085'
+    elif espace == 1.1:
+        e_txt = '110'
+    else:
+        e_txt = 'xxx'
+    es_text = '_espace_' + e_txt
+
+    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
+
+    ## TODO Move this inside the loop on subjects to allow subjec-specific electrode spacing
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
@@ -214,7 +225,7 @@ def inverse_model_combined_se():  # Start this script
             mono_thr[i, :] = row
 
     # Load tripolar data
-    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text +".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()

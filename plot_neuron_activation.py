@@ -31,10 +31,18 @@ def plot_neuron_activation():
         sp = pickle.load(f)
 
     elec_2d = 7  # which electrode was used in the 2D forward model
-    posvals = np.arange(0, 33, 0.01) - 14.6 - elec_2d * ESPACE
+    posvals = np.arange(0, 33, 0.01) - 14.6 - elec_2d * espace
+
+    if espace == '0.85':
+        e_txt = '085'
+    elif espace == 1.1:
+        e_txt = '110'
+    else:
+        e_txt = 'xxx'
+    es_text = '_espace_' + e_txt
 
     # Load monopolar data
-    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
@@ -49,7 +57,7 @@ def plot_neuron_activation():
             mono_thr[i, :] = row
 
     # Load tripolar data
-    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()

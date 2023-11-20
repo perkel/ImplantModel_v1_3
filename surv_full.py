@@ -17,17 +17,6 @@ def surv_full(e_pos, surv_vec, grid_pos):
     # electrode positions and extrapolated beyond the first and last positions
     # in a horizontal manner.
 
-    # Special condition for ForwardModel4_2D
-    if not isinstance(e_pos, list):
-        elec_basalpos = 30
-        espace = 1.1  # in mm; 'ELECTRODE' parameters must be vectors
-        e_pos = elec_basalpos - np.arange(16 - 1, -1, -1) * espace
-
-        # also process survival value
-        surv_scalar = surv_vec
-        tempsurv_vec = np.ones(16) * surv_scalar
-        surv_vec = tempsurv_vec
-
     nz = len(grid_pos)
 
     idxa = np.argmin(np.abs(grid_pos - e_pos[0]))
