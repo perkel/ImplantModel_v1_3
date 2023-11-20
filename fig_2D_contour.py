@@ -28,8 +28,16 @@ def fig_2D_contour():
     rpos_vals = np.arange(-0.95, 0.96, 0.02)
     nrpos = len(rpos_vals)
 
+    if espace == '0.85':
+        e_txt = '085'
+    elif espace == 1.1:
+        e_txt = '110'
+    else:
+        e_txt = 'xxx'
+    es_text = '_espace_' + e_txt
+
     # Load monopolar data
-    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
@@ -46,7 +54,7 @@ def fig_2D_contour():
     print("average monopolar threshold: ", np.nanmean(mono_thr))
 
     # Load tripolar data
-    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
