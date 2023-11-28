@@ -9,11 +9,19 @@ from matplotlib.font_manager import findfont, FontProperties
 def plot_neuron_activation():
 
     # Note: to make this figure, you need to have run the forward model with these scenarios first
-    # scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
+    scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
+
+    if espace == '0.85':
+        e_txt = '085'
+    elif espace == 1.1:
+        e_txt = '110'
+    else:
+        e_txt = 'xxx'
+    es_text = '_espace_' + e_txt
 
     font = findfont(FontProperties(family=['sans-serif']))
     print('font is ', font)
-    activation_file = FWDOUTPUTDIR + 'neuronact_' + STD_TEXT + '.npz'
+    activation_file = FWDOUTPUTDIR + 'neuronact_' + STD_TEXT + es_text + '.npz'
     print("Activation file: ", activation_file)
     data = np.load(activation_file, allow_pickle=True)
     surv_vals = data['arr_0']
@@ -31,15 +39,7 @@ def plot_neuron_activation():
         sp = pickle.load(f)
 
     elec_2d = 7  # which electrode was used in the 2D forward model
-    posvals = np.arange(0, 33, 0.01) - 14.6 - elec_2d * espace
-
-    if espace == '0.85':
-        e_txt = '085'
-    elif espace == 1.1:
-        e_txt = '110'
-    else:
-        e_txt = 'xxx'
-    es_text = '_espace_' + e_txt
+    posvals = np.arange(0, 33, 0.01) - 14.6 - (elec_2d * espace)
 
     # Load monopolar data
     datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
@@ -98,9 +98,9 @@ def plot_neuron_activation():
             ax.set_title(titletext)
 
         n_p_c = sp['neurons']['neur_per_clust']
-        ax.plot(posvals + 1.1, neuronact[survidxs[col], rposidxs[row], 0, 0, :]/n_p_c, '.',
+        ax.plot(posvals + espace, neuronact[survidxs[col], rposidxs[row], 0, 0, :]/n_p_c, '.',
                 color='blue', linewidth=0.5)
-        ax.plot(posvals + 1.1, neuronact[survidxs[col], rposidxs[row], 1, 0, :]/n_p_c, '.',
+        ax.plot(posvals + espace, neuronact[survidxs[col], rposidxs[row], 1, 0, :]/n_p_c, '.',
                 color='red', linewidth=0.5)
         ax.set(xlabel='Longitudinal distance (mm)')
         if row == 1 and col == 0:

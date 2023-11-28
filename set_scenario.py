@@ -1,7 +1,7 @@
 # set_scenario returns a vector of survival values and a vector of radial positions
 import numpy as np
 
-
+# Note that one could set electrode spacing for each scenario, but right now it's set in common_params
 def set_scenario(this_scen, n_elec):
     surv_vals = np.zeros(n_elec)
     rpos_vals = np.zeros(n_elec)

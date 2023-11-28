@@ -5,7 +5,7 @@ import numpy as np
 # Basic parameters
 NELEC = 16
 ELEC_BASALPOS = 30  # in mm
-espace = 0.85  # in mm; 'electrode' parameters must be vectors
+espace = 1.1  # in mm; 'electrode' parameters must be vectors
 
 # Neural activation parameters
 THRTARG = 100.0  # threshold number of active neurons
@@ -39,6 +39,11 @@ NSURVINIT = 1.0
 ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display it on graphs
 
 # Set specific scenarios to run with forward model.
+
+## NOTE!!
+# scenario names beginning with 'A' or 'S' and followed by 2 numerals are considered subjects
+# other scenario names are considered to be associated with the forward model
+
 # Not used by the 2D exploration tool. These are left in for convenience
 # scenarios = ['Gradual80R75']
 # scenarios = ['Uniform80R05']
@@ -54,7 +59,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['RampRpos2SGradual80']
 # scenarios = ['RampRposSOneHoleGradual80']
 
-scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
+# scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper figure 6
 # scenarios = ['Gradual2_80R00']
 # scenarios = ['RampRposRampSurv']
 # scenarios = ['ExtremeHole']
@@ -69,7 +74,7 @@ scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80']  # for paper f
 # Actual subject data. For inverse model only
 # scenarios = ['S40', 'S42']  # paper "good fit" examples. Figure 7
 # scenarios = ['S29', 'S56']  # paper "poor fit" examples. Figure 8
-# scenarios = ['A002R', 'A014L', 'A022L', 'A022R', 'A023R', 'A024L']
+scenarios = ['A002R', 'A014L', 'A022L', 'A022R', 'A023R', 'A024L']
 # all subjects with CT data
 # scenarios = ['S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
 #              'S55', 'S56', 'S57']

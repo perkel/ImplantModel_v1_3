@@ -10,7 +10,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
                                          37.2, 38.0, 38.0])
         thr_data['thrtp_db'] = np.array([38.9, 34.1, 39.6, 33.4, 39.1, 33.8, 41.6, 38.8, 48.1, 45.6, 53.3,
                                          51.5, 50.1, 49.9])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S23':
         thr_data['thrmp_db'] = np.array([36.9, 36.9, 35.9, 34.6, 34.1, 33.6, 34.4, 35.1, 35.5, 35.2, 38.6, 39.0, 36.8,
@@ -35,7 +35,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
                                          41.2, 40.4, 40.4])
         thr_data['thrtp_db'] = np.array([49.2, 51.7, 48.0, 45.8, 45.3, 41.5, 44.2, 49.0, 50.5, 45.4, 45.3, 42.2,
                                          50.3, 51.2])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S30':
         thr_data['thrmp_db'] = np.array([27.9, 27.9, 27.4, 28.9, 28.3, 29.3, 29.1, 29.6, 29.6, 29.4, 30.3, 30.3, 29.7,
@@ -54,49 +54,49 @@ def subj_thr_data(subj):  # returns threshold data for a subject
                                          32.8, 32.6, 32.6])
         thr_data['thrtp_db'] = np.array([41.8, 42.9, 47.5, 48.7, 43.4, 38.5, 43.1, 46.2, 46.5, 45.8, 48.5, 49.0,
                                          45.5, 44.5])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S40':
         thr_data['thrmp_db'] = np.array([39.0, 39.0, 39.2, 39.7, 40.5, 40.3, 40.3, 40.9, 40.7, 40.7, 41.0, 41.5, 41.6,
                                          42.7, 43.5, 43.5])
         thr_data['thrtp_db'] = np.array([54.8, 55.4, 55.3, 55.2, 55.5, 52.2, 55.2, 51.3, 53.2, 55.7, 53.6, 54.0,
                                          54.2, 53.7])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S41':
         thr_data['thrmp_db'] = np.array([30.6, 30.6, 32.2, 31.3, 31.3, 33.1, 33.5, 32.7, 32.9, 33.2, 32.8, 31.9, 33.5,
                                          34.7, 36.9, 36.9])
         thr_data['thrtp_db'] = np.array([44.6, 45.2, 45.4, 44.7, 44.4, 44.2, 45.1, 45.6, 45.6, 44.4, 44.8, 44.2,
                                          47.6, 46.9])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S42':
         thr_data['thrmp_db'] = np.array([28.3, 28.3, 28.0, 28.0, 28.2, 27.7, 30.0, 29.9, 28.6, 28.1, 27.1, 27.9, 28.1,
                                          28.8, 31.0, 31.0])
         thr_data['thrtp_db'] = np.array([45.7, 45.9, 44.3, 38.5, 34.9, 34.8, 35.6, 35.5, 35.1, 32.6, 33.3, 32.9,
                                          33.3, 37.6])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S43':
         thr_data['thrmp_db'] = np.array([39.1, 39.1, 36.9, 38.4, 38.4, 37.6, 36.9, 36.4, 34.9, 33.7, 32.9, 33.3,
                                          32.5, 33.1, 36.3, 36.3])
         thr_data['thrtp_db'] = np.array([42.4, 38.2, 43.4, 45.9, 51.3, 49.8, 49.0, 46.9, 46.9, 44.7, 42.5,
                                          38.9, 41.5, 43.2])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S46':
         thr_data['thrmp_db'] = np.array([35.8, 35.8, 38.3, 37.1, 38.8, 40.1, 38.8, 40.5, 41.9, 41.0, 41.7, 41.3,
                                          40.1, 40.2, 41.0, 41.0])
         thr_data['thrtp_db'] = np.array([49.2, 49.6, 50.5, 50.7, 52.4, 52.9, 54.0, 54.3, 52.8, 51.5, 51.1, 50.8,
                                          51.6, 51.5])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S47':
         thr_data['thrmp_db'] = np.array([26.8, 26.8, 20.5, 16.7, 23.1, 23.5, 21.3, 23.3, 29.2, 20.9, 24.0, 22.8, 24.8,
                                          19.0, 19.2, 19.2])
         thr_data['thrtp_db'] = np.array([32.5, 31.6, 28.8, 32.2, 36.1, 37.6, 42.3, 43.2, 41.1, 43.5, 45.2, 40.4,
                                          38.0, 30.8])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S48':
         thr_data['thrmp_db'] = np.array([37.2, 37.2, 36.7, 36.0, 35.3, 35.5, 34.1, 34.7, 34.5, 35.3, 34.5, 34.6, 35.9,
@@ -109,14 +109,14 @@ def subj_thr_data(subj):  # returns threshold data for a subject
             [40.1, 40.1, 40.9, 40.8, 42.0, 43.0, 43.375, 43.5, 43.625, 43.7, 44.4, 44.45833333,
              44.0, 44.3, 47.4, 47.4])
         thr_data['thrtp_db'] = np.array([47.9, 50.4, 51.5, 54.7, 54.7, 52.9, 51.5, 49.1, 49, 49, 49.4, 48.8, 50, 51.1])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S50':
         thr_data['thrmp_db'] = np.array([37.9, 37.9, 36.7, 33.9, 32.7, 29.9, 32.12473841, 32.5, 33.16640507, 32.0, 23.6,
                                          33.12473841, 36.4, 38.1, 40.8, 40.8])
         thr_data['thrtp_db'] = np.array(
             [54, 52.1, 50, 47.5, 44.3, 47.3, 44.9, 41.5, 40.5, 36.9, 43.2, 39.7, 48.9, 50.7])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S52':
         thr_data['thrmp_db'] = np.array(
@@ -124,21 +124,21 @@ def subj_thr_data(subj):  # returns threshold data for a subject
              33.0, 32.4, 33.6, 33.6])
         thr_data['thrtp_db'] = np.array(
             [39.7, 39.3, 40.4, 39.8, 40.5, 36.3, 39.5, 37.4, 40, 42.2, 41, 36.1, 37.6, 36.4])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S53':
         thr_data['thrmp_db'] = np.array([37.2, 37.2, 40.4, 40.1, 41.0, 40.5, 41.31349185, 40.8, 39.56349185, 40.3, 40.0,
                                          40.52182518, 39.4, 39.2, 40.4, 40.4])
         thr_data['thrtp_db'] = np.array([38.83, 41.9, 44, 44.92, 47.08, 49.15, 47.33, 46.98, 46.73, 47, 46.46,
                                          46.31, 44.32, 46.66])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S54':
         thr_data['thrmp_db'] = np.array([35.9, 35.9, 34.1, 36.8, 36.3, 36.9, 38.30913741, 37.1, 34.93413741, 37.0, 36.1,
                                          35.05913741, 35.1, 34.4, 33.1, 33.1])
         thr_data['thrtp_db'] = np.array([48.1, 48.5, 51.5, 53, 55.2, 54.2, 53, 41.4, 48.3, 41.1, 44.7, 42.3,
                                          40.7, 37.9])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'S55':
         thr_data['thrmp_db'] = np.array([32.8, 32.8, 33.6, 33.3, 33.9, 34.1, 30.67696662, 34.8, 33.96863329, 33.7, 35.6,
@@ -146,7 +146,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array([42.31835149, 39.89335149, 41.81001816, 41.46001816, 42.22668483, 41.87668483,
                                          43.84335149, 44.07668483, 44.57668483, 43.96001816, 42.21001816, 45.51001816,
                                          43.81001816, 45.36835149])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S56':
         thr_data['thrmp_db'] = np.array([34.4, 34.4, 29.0, 25.5, 30.5, 35.6, 35.39559991, 34.8, 33.60393325, 33.1, 33.9,
@@ -154,14 +154,14 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array([47.51075867, 46.39964756, 41.95520311, 50.094092, 46.17742533, 48.26075867,
                                          47.12186978, 42.87186978, 49.51075867, 46.094092, 46.64964756, 49.37730037,
                                          46.04396703, 50.19674481])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S57':
         thr_data['thrmp_db'] = np.array([37.7, 37.7, 37.5, 37.5, 37.9, 36.3, 36.75, 36.5, 36.91666667, 35.3, 35.5,
                                          33.70833333, 32.6, 32.8, 32.9, 32.9])
         thr_data['thrtp_db'] = np.array([40.7, 42.4, 44.3, 48.9, 52.4, 50.3, 48.0, 45.4, 40.9, 46.3, 38.2, 36.1,
                                          36.4, 38.2])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'A002R':
         thr_data['thrmp_db'] = np.array(
@@ -170,7 +170,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array(
             [43.59119102, 43.63285769, 47.32035769, 45.38285769, 47.50785769, 42.65369102, 40.61202435, 41.36202435,
              40.40369102, 44.27869102, 44.36202435, 49.00785769, 50.36202435, 53.71112029])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0.5, 0.9]
 
     elif subj == 'A014L':  # using true MP, not 0.5
@@ -180,7 +180,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array(
             [35.95130065, 36.36796732, 37.57630065, 38.93046732, 39.65963399, 39.26380065, 38.76380065, 38.61796732,
              37.26380065, 37.80546732, 37.45130065, 38.24296732, 39.84713399, 37.57630065])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0, 0.9]
     elif subj == 'A022L':
         thr_data['thrmp_db'] = np.array(
@@ -189,7 +189,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array(
             [45.79310901, 47.50144234, 46.10560901, 47.64727568, 48.10560901, 47.75144234, 48.20977568, 49.62644234,
              49.37644234, 48.73060901, 49.06394234, 50.39727568, 49.48060901, 51.63685901])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0.5, 0.9]
     elif subj == 'A022R':
         thr_data['thrmp_db'] = np.array(
@@ -198,7 +198,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array(
             [49.49744237, 49.78910904, 49.08077571, 47.72660904, 46.43494237, 48.33077571, 48.91410904, 48.60160904,
              46.99744237, 47.55994237, 46.83077571, 45.85160904, 48.22660904, 48.49744237])
-        # espace = 1.1
+        espace = 1.1
         sigVals = [0.5, 0.9]
     elif subj == 'A023R':  # EL15 is turned off / broken (data here for EL2 to EL14)
         thr_data['thrmp_db'] = np.array(
@@ -207,7 +207,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array(
             [43.8491258, 41.61995913, 41.51579246, 43.61995913, 44.7241258, 46.89079246, 47.4741258, 48.43245913,
              49.21486853, 47.50653519, 45.54820186, 41.44403519, 48.58986853, 48.58986853])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0.5, 0.9]
     elif subj == 'A024L':
         thr_data['thrmp_db'] = np.array([41.75984778, 41.75984778, 39.72859778, 39.27026445, 39.95776445, 39.58276445,
@@ -216,12 +216,12 @@ def subj_thr_data(subj):  # returns threshold data for a subject
         thr_data['thrtp_db'] = np.array([50.66381188, 52.78188226, 52.30271559, 52.55271559, 53.84438226, 53.01104892,
                                          46.63604892, 44.49021559, 44.26104892, 42.82354892, 40.63604892, 39.69854892,
                                          45.78188226, 45.78188226])
-        # espace = 0.85
+        espace = 0.85
         sigVals = [0.5, 0.9]
     else:
         raise SystemExit('Threshold data are not available for subject ' + subj)
 
-    return [thr_data['thrmp_db'], thr_data['thrtp_db'], sigVals]
+    return [thr_data['thrmp_db'], thr_data['thrtp_db'], sigVals, espace]
 
 
 def subj_ct_data(subj):  # returns ct data for a subject

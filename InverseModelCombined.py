@@ -15,6 +15,7 @@ import pstats
 from pstats import SortKey
 import csv
 import os
+import sys
 import scipy.signal as sig
 import scipy.stats as stats
 import matplotlib.pyplot as plt
@@ -38,7 +39,6 @@ fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 
 ifPlot = True  # Whether to plot output at end
 unsupervised = True  # Makes & saves summary plots but does not display them and wait for user input before proceeding
 ifPlotGuessContours = False  # Option to plot initial guesses for parameters given to the fitting algorithm
-use_fwd_model = True  # If True, use output from the forward model. If False, use subject data
 fit_tol = 0.1  # Fit tolerance for subject fits
 use_minimizer = True  # If true, uses the lmfit wrapper around scipy optimize. Otherwise vanilla scipy.minimize
 
@@ -200,44 +200,6 @@ def inverse_model_combined_se():  # Start this script
     pr = cProfile.Profile()
     pr.enable()  # Start the profiler
 
-    if espace == '0.85':
-        e_txt = '085'
-    elif espace == 1.1:
-        e_txt = '110'
-    else:
-        e_txt = 'xxx'
-    es_text = '_espace_' + e_txt
-
-    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
-
-    ## TODO Move this inside the loop on subjects to allow subjec-specific electrode spacing
-    file = open(datafile)
-    numlines = len(file.readlines())
-    file.close()
-
-    with open(datafile, newline='') as csvfile:
-        datareader = csv.reader(csvfile, delimiter=',')
-        ncol = len(next(datareader))
-        csvfile.seek(0)
-        mono_thr = np.empty([numlines, ncol])
-        for i, row in enumerate(datareader):
-            # Do the parsing
-            mono_thr[i, :] = row
-
-    # Load tripolar data
-    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text +".csv"
-    file = open(datafile)
-    numlines = len(file.readlines())
-    file.close()
-
-    with open(datafile, newline='') as csvfile:
-        datareader = csv.reader(csvfile, delimiter=',')
-        ncol = len(next(datareader))
-        csvfile.seek(0)
-        tripol_thr = np.empty([numlines, ncol])
-        for i, row in enumerate(datareader):
-            # Do the parsing
-            tripol_thr[i, :] = row
 
     # Now hold these data until about to fit a particular combination of monopolar and tripolar threshold values
     # to see if there is more than one solution
@@ -266,12 +228,17 @@ def inverse_model_combined_se():  # Start this script
     thresh_err_summary = np.zeros((num_scen, 2))
     rpos_summary = []
     rpos_err_summary = np.zeros(num_scen)
-    if not use_fwd_model:
-        dist_corr = np.zeros(num_scen)
-        dist_corr_p = np.zeros(num_scen)
+    dist_corr = np.zeros(num_scen)
+    dist_corr_p = np.zeros(num_scen)
 
     for scen in range(0, len(scenarios)):
         scenario = scenarios[scen]
+        first_let = scenario[0]
+        use_fwd_model = True
+
+        # if this scenario is a subject, set use_forward_model to be false
+        if (first_let == 'A' or first_let == 'S') and scenario[1:3].isnumeric():
+                use_fwd_model = False
         simParams['run_info']['scenario'] = scenario
         if use_fwd_model:
             [survvals, rposvals] = s_scen.set_scenario(scenario, NELEC)
@@ -285,10 +252,57 @@ def inverse_model_combined_se():  # Start this script
             retval = subject_data.subj_thr_data(subject)
             thr_data = {'thrmp_db': retval[0], 'thrmp': [], 'thrtp_db': retval[1], 'thrtp': [], 'thrtp_sigma': 0.9}
             sigVals = retval[2]
+            espace = retval[3]
             # thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
             #             'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
             thr_data['thrtp_db'] = np.insert(thr_data['thrtp_db'], 0, np.NaN)  # put NaNs at ends of array
             thr_data['thrtp_db'] = np.append(thr_data['thrtp_db'], np.NaN)
+
+            # Load 2D results corresponding to the correct electrode spacing
+            if espace == '0.85':
+                e_txt = '085'
+            elif espace == 1.1:
+                e_txt = '110'
+            else:
+                e_txt = 'xxx'
+            es_text = '_espace_' + e_txt
+
+            datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
+            # TODO should check if this file exists and if it doesn't remind the user that they need to run
+            # the 2D forward model for any electrode spacings that are used in the scenarios/subjects
+            try:
+                file = open(datafile, 'r')
+            except OSError:
+                print('Could not open/read file: ', datafile)
+                print('The most likely issue is that the 2D forward model has not been run for this electrode spacing.')
+                sys.exit()
+
+            numlines = len(file.readlines())
+            file.close()
+
+            with open(datafile, newline='') as csvfile:
+                datareader = csv.reader(csvfile, delimiter=',')
+                ncol = len(next(datareader))
+                csvfile.seek(0)
+                mono_thr = np.empty([numlines, ncol])
+                for i, row in enumerate(datareader):
+                    # Do the parsing
+                    mono_thr[i, :] = row
+
+            # Load tripolar data
+            datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text + ".csv"
+            file = open(datafile)
+            numlines = len(file.readlines())
+            file.close()
+
+            with open(datafile, newline='') as csvfile:
+                datareader = csv.reader(csvfile, delimiter=',')
+                ncol = len(next(datareader))
+                csvfile.seek(0)
+                tripol_thr = np.empty([numlines, ncol])
+                for i, row in enumerate(datareader):
+                    # Do the parsing
+                    tripol_thr[i, :] = row
 
             # Calculate offset to get closer to what the model can produce
             mp_offset_db = np.nanmean(thr_data['thrmp_db']) - np.nanmean(mono_thr)
@@ -384,7 +398,7 @@ def inverse_model_combined_se():  # Start this script
                     # no solution. This shouldn't happen with known scenarios,
                     # since the forward model calculated threshold.
                     if use_fwd_model:
-                        print('no solution, but this is a known scenario')
+                        print('electrode: ', i, ';  no solution, but this is a known scenario')
                         exit()
 
                     # Maybe there's some error in this process.
@@ -402,18 +416,18 @@ def inverse_model_combined_se():  # Start this script
                     # print("no solutions. Closest: ", mp_idx, ' and ', tp_idx,
                     #       ' , leading to guesses of (position, survival): ', rp_guess, sv_guess)
 
-                    print("no solutions. Closest: ", mp_idx, ' and ', tp_idx,
+                    print('electrode: ', i, ";  no solutions. Closest: ", mp_idx, ' and ', tp_idx,
                           ' , OVERRIDING to: (position, survival): ', rp_guess, sv_guess)
 
 
                 elif nsols[i] == 1:  # unique solution
-                    print("one solution: ", x, y)
+                    print('electrode: ', i, ';  one solution: ', x, y)
                     rp_guess = x
                     sv_guess = y
                     ax_guess = plt.plot(rp_guess, sv_guess, 'x')
 
                 else:  # multiple solutions
-                    print(nsols[i], " solutions: ", x, ' and: ', y)
+                    print('electrode: ', i, ';  ', nsols[i], ' solutions: ', x, ' and: ', y)
                     which_sols = np.zeros((4, int(nsols[i])))  # array for solutions and best fit
                     for sol in range(int(nsols[i])):  # Try all potential solutions; keep best
                         rp_guess = x[sol]
@@ -514,8 +528,8 @@ def inverse_model_combined_se():  # Start this script
                                fcn_args=(sigmaVals, simParams, fp, act_vals, thr_data))
 
             if use_fwd_model:
-                result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol, 'xatol': 0.01})
-                # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.02)
+                # result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol, 'xatol': 0.01})
+                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.02)
 
                 #  result = minner.minimize(method='leastsq')
             else:  # use CT data

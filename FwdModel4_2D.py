@@ -174,25 +174,6 @@ np.savez(FWDOUTPUTDIR + 'neuronact_' + STD_TEXT + es_text, survVals, rposVals, n
 
 # Plot the results
 if ifPlot:
-    # fig, ax = plt.subplots()
-    # ax.plot(rposVals, thr_sim_db[2, :, 0], marker='o')
-    # titleText = 'Threshold ' + descrip
-    # ax.set(xlabel='Electrode position (mm)', ylabel='Threshold (dB)', title=titleText)
-    #
-    # fig2, ax2 = plt.subplots()
-    # ax2.plot(survVals, thr_sim_db[:, 10, 0], marker='o', color='r')
-    # ax2.plot(survVals, thr_sim_db[:, 20, 0], marker='o', color='b')
-    # ax2.plot(survVals, thr_sim_db[:, 30, 0], marker='o', color='g')
-    # titleText = 'Threshold ' + descrip
-    # ax2.set(xlabel='Survival fraction', ylabel='Threshold monopolar (dB)', title=titleText)
-    #
-    # fig3, ax3 = plt.subplots()
-    # ax3.plot(survVals, thr_sim_db[:, 10, 1], marker='o', color='r')
-    # ax3.plot(survVals, thr_sim_db[:, 20, 1], marker='o', color='b')
-    # ax3.plot(survVals, thr_sim_db[:, 30, 1], marker='o', color='g')
-    # titleText = 'Threshold ' + descrip
-    # ax3.set(xlabel='Survival fraction', ylabel='Threshold tripolar (dB)', title=titleText)
-
     fig_2D_contour.fig_2D_contour()
     plot_neuron_activation.plot_neuron_activation()
     plt.show()
