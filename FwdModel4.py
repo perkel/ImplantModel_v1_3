@@ -53,6 +53,12 @@ nSig = len(sigmaVals)
 # print(scenarios)
 
 for scenario in scenarios:
+    # if this scenario is a subject, set use_forward_model to be false
+    first_let = scenario[0]
+    if (first_let == 'A' or first_let == 'S') and scenario[1:3].isnumeric():
+        print('This scenario, ', scenario, ' appears to be for a subject, not a forward model scenario. Skipping.')
+        continue
+
     [survVals, electrodes['rpos']] = s_scen.set_scenario(scenario, NELEC)
 
     if not os.path.isdir(FWDOUTPUTDIR):
