@@ -352,7 +352,6 @@ def inverse_model_combined_se():  # Start this script
 
         survvals = np.empty(NELEC)
         survvals[:] = np.nan
-        ## TODO check espace here
         ct_data = {'stdiameter': [], 'scala': [], 'elecdist': [], 'espace': 1.1, 'type': [], 'insrt_base': [],
                    'insert_apex': []}
         radius = 1.0
