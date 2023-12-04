@@ -89,9 +89,6 @@ rlvec = NEURONS['coef'] * (avec ** 2) + (1 - NEURONS['coef']) * avec
 rlvec = NEURONS['neur_per_clust'] * (rlvec ** NEURONS['power'])
 rlvltable = np.stack((avec, rlvec))  # start with the e-field(s) created above, but remove the current scaling
 
-# Specify which variables to vary and set up those arrays
-# sigmaVals = [0.5, 0.9] Should get from common_params
-
 nSig = len(sigmaVals)
 thr_sim_db = np.empty((nSurv, nRpos, nSig))  # Array for threshold data for different stim elecs and diff sigma values
 thr_sim_db[:] = np.nan
