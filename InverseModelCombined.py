@@ -8,6 +8,7 @@
 
 # Modified 6 August 2021 by DJP to start by fitting a single electrode at a time. This gives initial conditions
 # for each electrode. Then there's a holistic fitting process using all electrode parameters
+# Latest version 1 December 2023.
 
 import cProfile
 import io
@@ -15,6 +16,7 @@ import pstats
 from pstats import SortKey
 import csv
 import os
+import sys
 import scipy.signal as sig
 import scipy.stats as stats
 import matplotlib.pyplot as plt
@@ -35,13 +37,11 @@ from common_params import *  # import common values across all models
 
 # User adjustable parameters
 fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 'rpos' or 'survival'
-allow_vary_rext = False
 ifPlot = True  # Whether to plot output at end
 unsupervised = True  # Makes & saves summary plots but does not display them and wait for user input before proceeding
 ifPlotGuessContours = True  # Option to plot initial guesses for parameters given to the fitting algorithm
-use_fwd_model = True  # If True, use output from the forward model. If False, use subject data
 fit_tol = 0.1  # Fit tolerance for subject fits
-use_minimizer = True  # If true, uses the wrapper around scipy optimize. Otherwise vanilla scipy.minimize
+use_minimizer = True  # If true, uses the lmfit wrapper around scipy optimize. Otherwise vanilla scipy.minimize
 
 
 # For optimizing fit to thresholds need e_field, sim_params, sigvals
@@ -188,7 +188,7 @@ def find_closest(x1, y1, x2, y2):  # returns indices of the point on each curve 
 
 
 def inverse_model_combined_se():  # Start this script
-    fit_tol = 0.1
+    espace = 1.1  # TODO should be able to eliminate both of these lines
     if not os.path.isdir(INV_OUT_PRFIX):
         os.mkdir(INV_OUT_PRFIX)
         os.mkdir(INVOUTPUTDIR)
@@ -198,10 +198,20 @@ def inverse_model_combined_se():  # Start this script
 
     # First make sure that the 2D forward model has been run and load the data
     # It would be ideal to double check that it's the correct 2D data with identical parameters
-    # Load monopolar data
     pr = cProfile.Profile()
     pr.enable()  # Start the profiler
-    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + ".csv"
+
+    # Load 2D results corresponding to the correct electrode spacing
+    if espace == 0.85:
+        e_txt = '085'
+    elif espace == 1.1:
+        e_txt = '110'
+    else:
+        e_txt = 'xxx'
+    es_text = '_espace_' + e_txt
+
+    # Load monopolar data
+    datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
@@ -216,7 +226,7 @@ def inverse_model_combined_se():  # Start this script
             mono_thr[i, :] = row
 
     # Load tripolar data
-    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + ".csv"
+    datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text + ".csv"
     file = open(datafile)
     numlines = len(file.readlines())
     file.close()
@@ -238,64 +248,77 @@ def inverse_model_combined_se():  # Start this script
     n_elec_pos = 0
     n_z_pos = 0
 
-    # Open field data and load data
-    if allow_vary_rext:
+    # Open field table and load data
+    if "fieldTable" not in locals():
+        with open(FIELDTABLE, 'rb') as combined_data:
+            data = pickle.load(combined_data)
+            combined_data.close()
 
-        n_files = len(FIELDTABLE)
-        res_vals = np.zeros(n_files)
-
-        for i, file in enumerate(FIELDTABLE):
-            with open(file, 'rb') as combined_data:
-                data = pickle.load(combined_data)
-                combined_data.close()
-
-            fptemp = data[0]
-            fptemp['zEval'] = np.array(fptemp['zEval'])
-            fp = []
-            if i == 0:
-                fp = fptemp
-                n_elec_pos = len(fptemp['relec'])
-                n_z_pos = len(fptemp['zEval'])
-                act_vals = np.zeros((n_files, n_elec_pos, n_z_pos))
-
-            res_vals[i] = fptemp['resExt']
-            act_vals[i, :, :] = data[2]
-
-        npts = 10
-        act_vals_interp = np.zeros((npts, n_elec_pos, n_z_pos))
-        x_vals = np.linspace(np.min(res_vals), np.max(res_vals), npts)
-        for row in range(n_elec_pos):
-            for col in range(n_z_pos):
-                cs = CubicSpline(res_vals, act_vals[:, row, col])
-                act_vals_interp[:, row, col] = cs(x_vals)
-
-    else:
-        # Open field data and load data
-        if "fieldTable" not in locals():
-            with open(FIELDTABLE, 'rb') as combined_data:
-                data = pickle.load(combined_data)
-                combined_data.close()
-
-                #  load(FIELDTABLE) # get model voltage/activating tables, if not already loaded
-                # (output is 'fieldTable' and 'fieldParams')
-                fp = data[0]
-                # Temp fixup
-                fp['zEval'] = np.array(fp['zEval'])
-                act_vals = data[2]  # the data[1] has voltage values, which we are ignoring here
-                simParams['grid']['table'] = act_vals
+            #  load(FIELDTABLE) # get model voltage/activating tables, if not already loaded
+            # (output is 'fieldTable' and 'fieldParams')
+            fp = data[0]
+            # Temp fixup
+            fp['zEval'] = np.array(fp['zEval'])
+            act_vals = data[2]  # the data[1] has voltage values, which we are ignoring here
+            simParams['grid']['table'] = act_vals
 
     num_scen = len(scenarios)
     # Set up array for summary values
     thresh_err_summary = np.zeros((num_scen, 2))
     rpos_summary = []
     rpos_err_summary = np.zeros(num_scen)
-    if not use_fwd_model:
-        dist_corr = np.zeros(num_scen)
-        dist_corr_p = np.zeros(num_scen)
+    dist_corr = np.zeros(num_scen)
+    dist_corr_p = np.zeros(num_scen)
 
     for scen in range(0, len(scenarios)):
         scenario = scenarios[scen]
+        first_let = scenario[0]
+        use_fwd_model = True
+
+        # if this scenario is a subject, set use_forward_model to be false
+        if (first_let == 'A' or first_let == 'S') and scenario[1:3].isnumeric():
+                use_fwd_model = False
+
         simParams['run_info']['scenario'] = scenario
+        # Load 2D results corresponding to the correct electrode spacing
+        if espace == 0.85:
+            e_txt = '085'
+        elif espace == 1.1:
+            e_txt = '110'
+        else:
+            e_txt = 'xxx'
+        es_text = '_espace_' + e_txt
+
+        datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
+        # datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + ".csv"
+        file = open(datafile)
+        numlines = len(file.readlines())
+        file.close()
+
+        with open(datafile, newline='') as csvfile:
+            datareader = csv.reader(csvfile, delimiter=',')
+            ncol = len(next(datareader))
+            csvfile.seek(0)
+            mono_thr = np.empty([numlines, ncol])
+            for i, row in enumerate(datareader):
+                # Do the parsing
+                mono_thr[i, :] = row
+
+        # Load tripolar data
+        datafile = FWDOUTPUTDIR + "Tripolar_09_2D_" + STD_TEXT + es_text + ".csv"
+        file = open(datafile)
+        numlines = len(file.readlines())
+        file.close()
+
+        with open(datafile, newline='') as csvfile:
+            datareader = csv.reader(csvfile, delimiter=',')
+            ncol = len(next(datareader))
+            csvfile.seek(0)
+            tripol_thr = np.empty([numlines, ncol])
+            for i, row in enumerate(datareader):
+                # Do the parsing
+                tripol_thr[i, :] = row
+
         if use_fwd_model:
             [survvals, rposvals] = s_scen.set_scenario(scenario, NELEC)
             csv_file = FWDOUTPUTDIR + 'FwdModelOutput_' + scenario + '.csv'
@@ -305,29 +328,35 @@ def inverse_model_combined_se():  # Start this script
             subject = scenario
             electrodes['rpos'] = np.zeros(NELEC)
             rposvals = electrodes['rpos']
-            thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
-                        'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
+            retval = subject_data.subj_thr_data(subject)
+            thr_data = {'thrmp_db': retval[0], 'thrmp': [], 'thrtp_db': retval[1], 'thrtp': [], 'thrtp_sigma': 0.9}
+            sigVals = retval[2]
+            espace = retval[3]
+            # thr_data = {'thrmp_db': (subject_data.subj_thr_data(subject))[0], 'thrmp': [],
+            #             'thrtp_db': (subject_data.subj_thr_data(subject))[1], 'thrtp': [], 'thrtp_sigma': 0.9}
             thr_data['thrtp_db'] = np.insert(thr_data['thrtp_db'], 0, np.NaN)  # put NaNs at ends of array
             thr_data['thrtp_db'] = np.append(thr_data['thrtp_db'], np.NaN)
+
 
             # Calculate offset to get closer to what the model can produce
             mp_offset_db = np.nanmean(thr_data['thrmp_db']) - np.nanmean(mono_thr)
             tp_offset_db = np.nanmean(thr_data['thrtp_db']) - np.nanmean(tripol_thr)
             # Use the monopolar offset
-            overall_offset_db = mp_offset_db
+            # overall_offset_db = mp_offset_db
             # overall_offset_db = 0
             # Use the mean of monopolar and tripolar offsets
-            # overall_offset_db = np.mean([mp_offset_db, tp_offset_db])
+            overall_offset_db = np.mean([mp_offset_db, tp_offset_db])
             offset_mult = 1.0
             thr_data['thrmp_db'] -= offset_mult * overall_offset_db
             thr_data['thrtp_db'] -= offset_mult * overall_offset_db
 
-            survvals = np.empty(NELEC)
-            survvals[:] = np.nan
-            ct_data = {'stdiameter': [], 'scala': [], 'elecdist': [], 'espace': 1.1, 'type': [], 'insrt_base': [],
-                       'insert_apex': []}
-            radius = 1.0
-            ct_data['stdiameter'] = radius * 2.0 * (np.zeros(NELEC) + 1.0)
+        survvals = np.empty(NELEC)
+        survvals[:] = np.nan
+        ## TODO check espace here
+        ct_data = {'stdiameter': [], 'scala': [], 'elecdist': [], 'espace': 1.1, 'type': [], 'insrt_base': [],
+                   'insert_apex': []}
+        radius = 1.0
+        ct_data['stdiameter'] = radius * 2.0 * (np.zeros(NELEC) + 1.0)
 
         #  rposvals = electrodes['rpos']  # save this for later
         saverposvals = rposvals
@@ -367,25 +396,6 @@ def inverse_model_combined_se():  # Start this script
                 mptarg = thr_data['thrmp_db'][i]
                 tptarg = thr_data['thrtp_db'][i]
 
-                # Get contours and find intersection to find initial guess for overall fitting
-                # fig3, ax3 = plt.subplots()
-                # rp_curt = rpos_grid_vals[0:-2]  # curtailed rpos values
-                # f_interp_mp = interpolate.interp2d(rp_curt, surv_grid_vals, mono_thr[:, 0:-2])
-                # f_interp_tp = interpolate.interp2d(rp_curt, surv_grid_vals, tripol_thr[:, 0:-2])
-                # xnew = np.linspace(rpos_grid_vals[0], rpos_grid_vals[-2], 50)
-                # ynew = np.linspace(surv_grid_vals[0], surv_grid_vals[-2], 50)
-                # xn, yn = np.meshgrid(xnew, ynew)
-                # znew_mp = f_interp_mp(xnew, ynew)
-                # znew_tp = f_interp_tp(xnew, ynew)
-                # ax3 = plt.contour(xn, yn, znew_mp, [mptarg], colors='green')
-                # ax3.axes.set_xlabel('Rpos (mm)')
-                # ax3.axes.set_ylabel('Survival fraction')
-                # ax4 = plt.contour(xn, yn, znew_tp, [tptarg], colors='red')
-                # ax4.axes.set_xlabel('Rpos (mm)')
-                # ax4.axes.set_ylabel('Survival fraction')
-                # mpcontour = ax3.allsegs[0]  # Contour points in rpos x survival space that give this threshold
-                # tpcontour = ax4.allsegs[0]
-
                 fig4, ax5 = plt.subplots()
                 ax5 = plt.contour(rpos_grid_vals, surv_grid_vals[2:], mono_thr[2:, :], [mptarg], colors='green')
                 ax5.axes.set_xlabel('Rpos (mm)')
@@ -423,7 +433,7 @@ def inverse_model_combined_se():  # Start this script
                     # no solution. This shouldn't happen with known scenarios,
                     # since the forward model calculated threshold.
                     if use_fwd_model:
-                        print('no solution, but this is a known scenario')
+                        print('electrode: ', i, ';  no solution, but this is a known scenario')
                         exit()
 
                     # Maybe there's some error in this process.
@@ -441,21 +451,18 @@ def inverse_model_combined_se():  # Start this script
                     # print("no solutions. Closest: ", mp_idx, ' and ', tp_idx,
                     #       ' , leading to guesses of (position, survival): ', rp_guess, sv_guess)
 
-                    # testing
-                    rp_guess = 0.0
-                    sv_guess = 0.5
-                    print("no solutions. Closest: ", mp_idx, ' and ', tp_idx,
+                    print('electrode: ', i, ";  no solutions. Closest: ", mp_idx, ' and ', tp_idx,
                           ' , OVERRIDING to: (position, survival): ', rp_guess, sv_guess)
 
 
                 elif nsols[i] == 1:  # unique solution
-                    print("one solution: ", x, y)
+                    print('electrode: ', i, ';  one solution: ', x, y)
                     rp_guess = x
                     sv_guess = y
                     ax_guess = plt.plot(rp_guess, sv_guess, 'x')
 
                 else:  # multiple solutions
-                    print(nsols[i], " solutions: ", x, ' and: ', y)
+                    print('electrode: ', i, ';  ', nsols[i], ' solutions: ', x, ' and: ', y)
                     which_sols = np.zeros((4, int(nsols[i])))  # array for solutions and best fit
                     for sol in range(int(nsols[i])):  # Try all potential solutions; keep best
                         rp_guess = x[sol]
@@ -505,12 +512,8 @@ def inverse_model_combined_se():  # Start this script
 
             initvec = np.append(fitrposvals, fitsurvvals)
 
-            ## Testing to improve step scenario
-            initvec[NELEC:] = 0.5
-            # initvec[23] = 0.5
-
-            if allow_vary_rext:
-                initvec = np.append(initvec, 150.0)  # TODO how to pick best guess for Rext?
+            # test
+            # initvec[NELEC:] = 0.5
 
             for i, val in enumerate(initvec):  # place values in to the par object
                 if i < NELEC:
@@ -564,7 +567,7 @@ def inverse_model_combined_se():  # Start this script
 
             if use_fwd_model:
                 # result = minner.minimize(method='least-squares', ftol=fit_tol, diff_step=0.02)
-                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.01)
 
                 #  result = minner.minimize(method='leastsq')
             else:  # use CT data
@@ -595,11 +598,7 @@ def inverse_model_combined_se():  # Start this script
             # store the results in the right place
             print('minimize finished. Message is: ', result.message)
             fitrposvals = result.x[0:NELEC]
-            if allow_vary_rext:
-                fitsurvvals = result.x[NELEC:-1]
-                fit_rext = result.x[-1]
-            else:
-                fitsurvvals = result.x[NELEC:]
+            fitsurvvals = result.x[NELEC:]
 
         simParams['electrodes']['rpos'] = fitrposvals
 
@@ -692,6 +691,16 @@ def inverse_model_combined_se():  # Start this script
                     t10 = ct_vals[row]
                     data_writer.writerow([row, thrtargs[0][0][row], thrtargs[1][0][row], thrsim[0][0][row],
                                           thrsim[1][0][row], ct_vals[row], t6, t8, t7])
+
+            # Done with the values for each electrode
+            thr_err_mp = np.abs(np.subtract(thrsim[0][0][:], thrtargs[0][0][:]))
+            ovrl_mean_mp_err = np.mean(thr_err_mp)
+            thr_err_tp = np.abs(np.subtract(thrsim[1][0][:], thrtargs[1][0][:]))
+            ovrl_mean_tp_err = np.mean(thr_err_tp)
+
+            data_writer.writerow(" ")  # blank line
+            data_writer.writerow(['Mean: ', ' ', 'MP_err: ', ovrl_mean_mp_err, ' TP_err: ', ovrl_mean_tp_err])
+
         data_file.close()
 
         # Save values in npy format
@@ -713,6 +722,7 @@ def inverse_model_combined_se():  # Start this script
                 txt_string = scenario
             else:
                 txt_string = subject
+
             plot_inverse_results.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
 
         # Save individual subject file
@@ -740,11 +750,13 @@ def inverse_model_combined_se():  # Start this script
     # ps.print_stats(10)
     # print(s.getvalue())
 
-    # Save the data into a single file
     print('Completed inverse model on ', num_scen, ' scenarios in total time (s) of: ', ps.total_tt)
 
     # save summary data in a CSV file
-    # scenario, threshold error metric, and for CT cases: rpos error matric
+    # scenario, threshold error metric, and for CT cases: rpos error matrix
+    # TODO: provide more info on inverse fit type in summary filename
+    # Right now, each run of the inverse model overwrites the last summary. We should keep these results,
+    # and somehow identify them as subject or scenario or something in the filename.
     print('saving summary data in CSV form')
     summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_results.csv'
     with open(summary_file_name, mode='w') as data_file:
@@ -754,14 +766,14 @@ def inverse_model_combined_se():  # Start this script
         data_writer.writerow(header)
         for row in range(num_scen):
             if use_fwd_model:
-                data_writer.writerow([scenarios[row], '%.3f' % np.array_str(thresh_err_summary[row, 0]),
-                                      '%.3f' % np.array_str(thresh_err_summary[row, 1]),
-                                      '%.3f' % np.array_str(rpos_err_summary[row])])
+                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
+                                      '%.3f' % thresh_err_summary[row, 1],
+                                      '%.3f' % rpos_err_summary[row]])
             else:
-                data_writer.writerow([scenarios[row], '%.3f' % np.array_str(thresh_err_summary[row, 0]),
-                                      '%.3f' % np.array_str(thresh_err_summary[row, 1]),
-                                      '%.3f' % np.array_str(rpos_err_summary[row]),
-                                      '%.3f' % np.array_str(dist_corr[row]), '%.5f' % np.array_str(dist_corr_p[row])])
+                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
+                                      '%.3f' % thresh_err_summary[row, 1],
+                                      '%.3f' % rpos_err_summary[row],
+                                      '%.3f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
         data_file.close()
 
     # save summary binary data file
