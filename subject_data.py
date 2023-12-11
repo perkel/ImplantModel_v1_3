@@ -23,6 +23,7 @@ def subj_thr_data(subj):  # returns threshold data for a subject
                                          32.9, 32.9, 32.9])
         thr_data['thrtp_db'] = np.array([43.1, 43.4, 45.3, 43.5, 41.9, 41.6, 45.0, 50.3, 45.4, 44.2, 44.5, 46.2,
                                          48.2, 49.2])
+        espace = 1.1
         sigVals = [0, 0.9]
     elif subj == 'S28':
         thr_data['thrmp_db'] = np.array([29.5, 29.5, 31.3, 30.6, 31.3, 30.9, 30.3, 30.7, 32.1, 31.6, 32.6, 31.5, 32.4,
