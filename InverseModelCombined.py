@@ -187,7 +187,7 @@ def find_closest(x1, y1, x2, y2):  # returns indices of the point on each curve 
     return min_idx
 
 
-def inverse_model_combined_se():  # Start this script
+def inverse_model_combined():  # Start this script
     espace = 1.1  # TODO should be able to eliminate both of these lines
     if not os.path.isdir(INV_OUT_PRFIX):
         os.mkdir(INV_OUT_PRFIX)
@@ -409,20 +409,20 @@ def inverse_model_combined_se():  # Start this script
                 if not ifPlotGuessContours:
                     plt.close(fig4)
 
-                nmp = len(mpcontour)
-                ntp = len(tpcontour)
+                nmp = len(mpcontour[0])
+                ntp = len(tpcontour[0])
                 mpx = np.zeros(nmp)
                 mpy = np.zeros(nmp)
                 tpx = np.zeros(ntp)
                 tpy = np.zeros(ntp)
 
                 for j in range(0, nmp):  # Should be able to do this without for loops
-                    mpx[j] = mpcontour[j][0]
-                    mpy[j] = mpcontour[j][1]
+                    mpx[j] = mpcontour[0][j][0]
+                    mpy[j] = mpcontour[0][j][1]
 
                 for j in range(0, ntp):
-                    tpx[j] = tpcontour[j][0]
-                    tpy[j] = tpcontour[j][1]
+                    tpx[j] = tpcontour[0][j][0]
+                    tpy[j] = tpcontour[0][j][1]
 
                 x, y = intsec.intersection(mpx, mpy, tpx, tpy)  # find intersection(s)
 
@@ -783,4 +783,4 @@ def inverse_model_combined_se():  # Start this script
 
 
 if __name__ == '__main__':
-    inverse_model_combined_se()
+    inverse_model_combined()
