@@ -9,9 +9,9 @@ from matplotlib.font_manager import findfont, FontProperties
 def plot_neuron_activation():
 
     # Note: to make this figure, you need to have run the forward model with these scenarios first
-    scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
+    # scenarios = ['Uniform80R05', 'Uniform80R10', 'Uniform80R15']
 
-    if espace == '0.85':
+    if espace == 0.85:
         e_txt = '085'
     elif espace == 1.1:
         e_txt = '110'
