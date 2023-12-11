@@ -28,7 +28,7 @@ def fig_2D_contour():
     rpos_vals = np.arange(-0.95, 0.96, 0.02)
     nrpos = len(rpos_vals)
 
-    if espace == '0.85':
+    if espace == 0.85:
         e_txt = '085'
     elif espace == 1.1:
         e_txt = '110'
@@ -277,25 +277,25 @@ def fig_2D_contour():
         cont_tp = the_ax.contour(1 - rpos_vals, surv_vals, tripol_thr, this_tp_thr, colors='red')
         mpcontour = cont_mp.allsegs[0]
         tpcontour = cont_tp.allsegs[0]
-        nmp = len(mpcontour)
-        ntp = len(tpcontour)
+        nmp = len(mpcontour[0])
+        ntp = len(tpcontour[0])
         mpx = np.zeros(nmp)
         mpy = np.zeros(nmp)
         tpx = np.zeros(ntp)
         tpy = np.zeros(ntp)
 
         for j in range(0, nmp):  # Should be able to do this without for loops
-            mpx[j] = mpcontour[j][0]
-            mpy[j] = mpcontour[j][1]
+            mpx[j] = mpcontour[0][j][0]
+            mpy[j] = mpcontour[0][j][1]
 
         for j in range(0, ntp):
-            tpx[j] = tpcontour[j][0]
-            tpy[j] = tpcontour[j][1]
+            tpx[j] = tpcontour[0][j][0]
+            tpy[j] = tpcontour[0][j][1]
 
         x, y = intsec.intersection(mpx, mpy, tpx, tpy)  # find intersection(s)
-        the_ax.plot(x[-1], y[-1], 'x', color='black', markersize='10', mew=2.5)
-        if i > 0:
-            the_ax.plot(x[0], y[0], 'x', color='black', markersize='10')
+        if i > 0 and len(x) > 0:
+            the_ax.plot(x[-1], y[-1], 'x', color='black', markersize='10', mew=2.5)
+        the_ax.plot(x[0], y[0], 'x', color='black', markersize='10', mew=2.5)
         the_ax.set_xlim([0, 1.9])
         the_ax.text(0.1, 0.8, labels[i], fontsize=16)
 
