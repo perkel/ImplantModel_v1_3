@@ -58,7 +58,7 @@ radius = 1.0  # cylinder radius
 res_int = 70.0  # internal resistivity
 res_ext = 2500.0  # external resistivity
 
-output_filename = '13August2023_MedResolution_Rext2500.dat'
+output_filename = '7Dec2023_MedResolution_Rext2500.dat'
 
 pr = cProfile.Profile()
 
