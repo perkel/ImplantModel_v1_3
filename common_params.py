@@ -5,14 +5,14 @@ import numpy as np
 # Basic parameters
 NELEC = 16
 ELEC_BASALPOS = 30  # in mm
-espace = 1.1  # in mm; 'electrode' parameters must be vectors
+espace = 0.85
 
 # Neural activation parameters
-THRTARG = 100.0  # threshold number of active neurons
+THRTARG = 50.0
 TARG_TEXT = '_TARG' + str(round(THRTARG)) + '/'
 ACTR = 100.0
 ACTR_TEXT = 'ACTR' + str(round(ACTR)) + '_'
-ACT_STDREL = 2.0
+ACT_STDREL = 1.0
 STD_TEXT = 'STDR' + str(ACT_STDREL)
 STD_TEXT = STD_TEXT.replace('.', '_')
 
@@ -64,7 +64,7 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['RampRposRampSurv']
 # scenarios = ['ExtremeHole']
 # scenarios = ['RampRposS80']
-scenarios = ['RampRposSGradual80']
+# scenarios = ['RampRposSGradual80']
 # scenarios = ['Checking_REXT_2500']
 # scenarios = ['CustomForECAPFigure']
 # scenarios = ['Step40_80R00']
@@ -77,8 +77,8 @@ scenarios = ['RampRposSGradual80']
 # scenarios = ['A002R', 'A014L', 'A022L', 'A022R', 'A023R', 'A024L']
 # scenarios = ['A014L']
 # all subjects with CT data
-# scenarios = ['S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
-#              'S55', 'S56', 'S57']
+scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80', 'S22', 'S27', 'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
+             'S55', 'S56', 'S57']
 
 # File locations
 FWD_OUT_PRFIX = 'FWD_OUTPUT/'
