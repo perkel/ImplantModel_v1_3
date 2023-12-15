@@ -267,6 +267,7 @@ def inverse_model_combined():  # Start this script
     thresh_err_summary = np.zeros((num_scen, 2))
     rpos_summary = []
     rpos_err_summary = np.zeros(num_scen)
+    surv_err_summary = np.zeros(num_scen)
     dist_corr = np.zeros(num_scen)
     dist_corr_p = np.zeros(num_scen)
 
@@ -409,20 +410,20 @@ def inverse_model_combined():  # Start this script
                 if not ifPlotGuessContours:
                     plt.close(fig4)
 
-                nmp = len(mpcontour[0])
-                ntp = len(tpcontour[0])
+                nmp = len(mpcontour)
+                ntp = len(tpcontour)
                 mpx = np.zeros(nmp)
                 mpy = np.zeros(nmp)
                 tpx = np.zeros(ntp)
                 tpy = np.zeros(ntp)
 
                 for j in range(0, nmp):  # Should be able to do this without for loops
-                    mpx[j] = mpcontour[0][j][0]
-                    mpy[j] = mpcontour[0][j][1]
+                    mpx[j] = mpcontour[j][0]
+                    mpy[j] = mpcontour[j][1]
 
                 for j in range(0, ntp):
-                    tpx[j] = tpcontour[0][j][0]
-                    tpy[j] = tpcontour[0][j][1]
+                    tpx[j] = tpcontour[j][0]
+                    tpy[j] = tpcontour[j][1]
 
                 x, y = intsec.intersection(mpx, mpy, tpx, tpy)  # find intersection(s)
 
@@ -566,7 +567,8 @@ def inverse_model_combined():  # Start this script
 
             if use_fwd_model:
                 # result = minner.minimize(method='least-squares', ftol=fit_tol, diff_step=0.02)
-                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.01)
+                # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                result = minner.minimize(method='Nelder-Mead', options={"fatol": fit_tol})
 
                 #  result = minner.minimize(method='leastsq')
             else:  # use CT data
@@ -634,8 +636,10 @@ def inverse_model_combined():  # Start this script
             rposerrs = np.subtract(rposvals, fitrposvals)
             survivalerrs = np.subtract(survvals, fitsurvvals)
             rpos_summary.append([rposvals, fitrposvals])
-            rpos_err_metric = np.NAN
-            rpos_err_summary[scen] = np.NAN
+            rpos_err_metric = np.mean(np.abs(rposerrs))
+            rpos_err_summary[scen] = rpos_err_metric
+            surv_err_summary[scen] = np.mean(np.abs(survivalerrs))
+            [dist_corr[scen], dist_corr_p[scen]] = stats.pearsonr(1 - rposvals, 1 - fitrposvals)
 
             # Save values in CSV format
             save_file_name = INVOUTPUTDIR + scenario + '_fitResults_' + 'combined.csv'
@@ -761,18 +765,19 @@ def inverse_model_combined():  # Start this script
     with open(summary_file_name, mode='w') as data_file:
         data_writer = csv.writer(data_file, delimiter=',', quotechar='"')
         header = ['Scenario/subject', 'Mean MP Threshold Error', 'Mean TP Threshold Error', 'Position Error',
-                  'Dist correlation', 'Dist corr p']
+                  'Density error', 'Dist correlation', 'Dist corr p']
         data_writer.writerow(header)
         for row in range(num_scen):
             if use_fwd_model:
-                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
-                                      '%.3f' % thresh_err_summary[row, 1],
-                                      '%.3f' % rpos_err_summary[row]])
+                data_writer.writerow([scenarios[row], '%.4f' % thresh_err_summary[row, 0],
+                                      '%.4f' % thresh_err_summary[row, 1],
+                                      '%.4f' % rpos_err_summary[row], '%.4f' % surv_err_summary[row],
+                                      '%.4f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
             else:
-                data_writer.writerow([scenarios[row], '%.3f' % thresh_err_summary[row, 0],
-                                      '%.3f' % thresh_err_summary[row, 1],
-                                      '%.3f' % rpos_err_summary[row],
-                                      '%.3f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
+                data_writer.writerow([scenarios[row], '%.4f' % thresh_err_summary[row, 0],
+                                      '%.4f' % thresh_err_summary[row, 1],
+                                      '%.4f' % rpos_err_summary[row], ['NaN'],
+                                      '%.4f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
         data_file.close()
 
     # save summary binary data file
