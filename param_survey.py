@@ -96,13 +96,17 @@ for stdrel in stdrel_vals:
         # Run inverse model
         inv_mod.inverse_model_combined()
 
-        # Collect and collate results stats
+        # Collect and collate results stats ( do this in a separate script)
 
 
         # Rename fwd and inverse output directories
-        new_dir_suffix = 'R%d' % res_ext + '_' + 'std_%.1f' % stdrel + '_thr_%d' % thrtarg
-        new_fwd_dir = cp.FWDOUTPUTDIR + new_dir_suffix
+        new_dir_suffix = '_R%d' % res_ext + '_' + 'std_%.1f' % stdrel + '_thr_%d' % thrtarg
+        new_fwd_dir = cp.FWDOUTPUTDIR[0:-1] + new_dir_suffix
         os.rename(cp.FWDOUTPUTDIR, new_fwd_dir)
-        new_inv_dir = cp.INVOUTPUTDIR + new_dir_suffix
+        new_inv_dir = cp.INVOUTPUTDIR[0:-1] + new_dir_suffix
         os.rename(cp.INVOUTPUTDIR, new_inv_dir)
 
+
+# Run a separate script to calculate mean & std for each subject across parameters
+# Want to find out best paramwter combination, and also how robust each subject fit is
+# to changes in parameter sets
