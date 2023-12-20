@@ -29,8 +29,22 @@ import plot_neuron_activation
 
 def fwd_model_2D():
 
-    importlib.reload(common_params)
-    espace = common_params.espace
+    param_file = 'surv_params.txt'
+    tempdata = np.zeros(4)  # 4 values
+    if os.path.exists(param_file):
+        with open(param_file, newline='') as csvfile:
+            datareader = csv.reader(csvfile, delimiter=',')
+            ncol = len(next(datareader))
+            csvfile.seek(0)
+            for i, row in enumerate(datareader):
+                # Do the parsing
+                tempdata[i] = row[0]
+
+    res_ext = tempdata[0]
+    NEURONS['act_stdrel'] = tempdata[1]
+    NEURONS['thrtarg'] = tempdata[2]
+    espace = tempdata[3]
+
     # We depend on a voltage and activation tables calculated using
     # voltage_calc.py and saved as a .dat file
     with open(FIELDTABLE, 'rb') as combined_data:
@@ -55,7 +69,7 @@ def fwd_model_2D():
     SIDELOBE = 1
     ################################
 
-    ifPlot = True  # Whether to plot the results
+    ifPlot = False  # Whether to plot the results
     ifPlotContours = False
     survVals = np.arange(0.04, 0.97, 0.02)  # Was 0.02
     rposVals = np.arange(-0.95, 0.96, 0.02)  # Was 0.02

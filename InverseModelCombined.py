@@ -188,13 +188,31 @@ def find_closest(x1, y1, x2, y2):  # returns indices of the point on each curve 
 
 
 def inverse_model_combined():  # Start this script
-    espace = 1.1  # TODO should be able to eliminate both of these lines
+
     if not os.path.isdir(INV_OUT_PRFIX):
         os.mkdir(INV_OUT_PRFIX)
         os.mkdir(INVOUTPUTDIR)
     else:
         if not os.path.isdir(INVOUTPUTDIR):
             os.mkdir(INVOUTPUTDIR)
+
+    # for param survey
+    param_file = 'surv_params.txt'
+    tempdata = np.zeros(4)  # 4 values
+    if os.path.exists(param_file):
+        with open(param_file, newline='') as csvfile:
+            datareader = csv.reader(csvfile, delimiter=',')
+            ncol = len(next(datareader))
+            csvfile.seek(0)
+            for i, row in enumerate(datareader):
+                # Do the parsing
+                tempdata[i] = row[0]
+
+    res_ext = tempdata[0]
+    NEURONS['act_stdrel'] = tempdata[1]
+    NEURONS['thrtarg'] = tempdata[2]
+    espace = tempdata[3]  # should be overridden by scenario/subject
+
 
     # First make sure that the 2D forward model has been run and load the data
     # It would be ideal to double check that it's the correct 2D data with identical parameters
@@ -410,20 +428,20 @@ def inverse_model_combined():  # Start this script
                 if not ifPlotGuessContours:
                     plt.close(fig4)
 
-                nmp = len(mpcontour)
-                ntp = len(tpcontour)
+                nmp = len(mpcontour[0])
+                ntp = len(tpcontour[0])
                 mpx = np.zeros(nmp)
                 mpy = np.zeros(nmp)
                 tpx = np.zeros(ntp)
                 tpy = np.zeros(ntp)
 
                 for j in range(0, nmp):  # Should be able to do this without for loops
-                    mpx[j] = mpcontour[j][0]
-                    mpy[j] = mpcontour[j][1]
+                    mpx[j] = mpcontour[0][j][0]
+                    mpy[j] = mpcontour[0][j][1]
 
                 for j in range(0, ntp):
-                    tpx[j] = tpcontour[j][0]
-                    tpy[j] = tpcontour[j][1]
+                    tpx[j] = tpcontour[0][j][0]
+                    tpy[j] = tpcontour[0][j][1]
 
                 x, y = intsec.intersection(mpx, mpy, tpx, tpy)  # find intersection(s)
 
@@ -566,14 +584,14 @@ def inverse_model_combined():  # Start this script
                                fcn_args=(sigmaVals, simParams, fp, act_vals, thr_data))
 
             if use_fwd_model:
-                # result = minner.minimize(method='least-squares', ftol=fit_tol, diff_step=0.02)
+                # result = minner.minimize(method='least-squares', options={'ftol': fit_tol, 'diff_step': 0.02})
                 # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
                 result = minner.minimize(method='Nelder-Mead', options={"fatol": fit_tol})
 
                 #  result = minner.minimize(method='leastsq')
             else:  # use CT data
-                # result = minner.minimize(method='Nelder-Mead', ftol=fit_tol, xtol=1e-3, max_nfev=2000)
-                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol})
+                # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
 
             for i in range(NELEC):  # store the results in the right place
                 vname = 'v_%i' % i
