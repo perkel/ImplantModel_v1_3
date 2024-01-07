@@ -9,7 +9,7 @@ import cylinder3d_makeprofile as c3dm
 
 # The function that is used by the optimization algorithm
 def objectivefunc(x, e_field, sim_params):
-    target = sim_params['neurons']['thrTarg']  # threshold # neurons
+    target = sim_params['neurons']['thrtarg']  # threshold # neurons
     tv1 = thr_f.thr_function(x, e_field, sim_params)[0]  # returns nCount, NeuralProfile, ActiveProfile
     retval = (tv1 - target) ** 2
     # print('stim (dB): ', 20*np.log10(x), ' ; # neurons activated: ', tv1)
@@ -70,7 +70,7 @@ def get_thresholds(field_table, field_params, sim_params):
         # Use our own solving algorithm; this is clumsy but I couldn't find a solver in scipy.optimize that took
         # advantage of the known monotonicity of the function
         error = 20  # Ensure that the system starts with a large "error"
-        target = sim_params['neurons']['thrTarg']
+        target = sim_params['neurons']['thrtarg']
         nextstim = sim_params['channel']['current']
         lastpos = nextstim
         lastneg = 0.0
@@ -98,7 +98,7 @@ def get_thresholds(field_table, field_params, sim_params):
 
     thresholds = 20 * np.log10(thresholds)  # return thresholds in dB
     ncount = np.sum(np.asarray(nvals))
-    if np.abs(ncount - sim_params['neurons']['thrTarg']) > 10:
+    if np.abs(ncount - sim_params['neurons']['thrtarg']) > 10:
         print("getThresholds returning ncount: ", ncount)
     if len(thresholds) == 1:
         return [thresholds, np.asarray(nvals)]
