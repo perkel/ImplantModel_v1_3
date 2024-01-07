@@ -39,7 +39,7 @@ from common_params import *  # import common values across all models
 fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 'rpos' or 'survival'
 ifPlot = True  # Whether to plot output at end
 unsupervised = True  # Makes & saves summary plots but does not display them and wait for user input before proceeding
-ifPlotGuessContours = True  # Option to plot initial guesses for parameters given to the fitting algorithm
+ifPlotGuessContours = False  # Option to plot initial guesses for parameters given to the fitting algorithm
 fit_tol = 0.1  # Fit tolerance for subject fits
 use_minimizer = True  # If true, uses the lmfit wrapper around scipy optimize. Otherwise vanilla scipy.minimize
 
@@ -188,7 +188,7 @@ def find_closest(x1, y1, x2, y2):  # returns indices of the point on each curve 
 
 
 def inverse_model_combined():  # Start this script
-
+    # espace =
     if not os.path.isdir(INV_OUT_PRFIX):
         os.mkdir(INV_OUT_PRFIX)
         os.mkdir(INVOUTPUTDIR)
@@ -230,9 +230,14 @@ def inverse_model_combined():  # Start this script
 
     # Load monopolar data
     datafile = FWDOUTPUTDIR + "Monopolar_2D_" + STD_TEXT + es_text + ".csv"
-    file = open(datafile)
-    numlines = len(file.readlines())
-    file.close()
+    try:
+        file = open(datafile)
+    except OSError:
+        print('Cannot open ', datafile)
+        print('The most likely solution is to make sure to run the 2D forward model first')
+    else:
+        numlines = len(file.readlines())
+        file.close()
 
     with open(datafile, newline='') as csvfile:
         datareader = csv.reader(csvfile, delimiter=',')
@@ -452,7 +457,7 @@ def inverse_model_combined():  # Start this script
                     # since the forward model calculated threshold.
                     if use_fwd_model:
                         print('electrode: ', i, ';  no solution, but this is a known scenario')
-                        exit()
+                        # exit()
 
                     # Maybe there's some error in this process.
                     # plt.show()
@@ -580,6 +585,7 @@ def inverse_model_combined():  # Start this script
         if use_minimizer:  # Now do the main fitting for all electrodes at once
             # minner = Minimizer(objectivefunc_lmfit_all, par, diff_step=0.02, nan_policy='omit',
             #                    fcn_args=(sigmaVals, simParams, fp, act_vals, thr_data))
+            print('starting minimization. Std and targ are: ', ACT_STDREL, ' and ', THRTARG)
             minner = Minimizer(objectivefunc_lmfit_all, par, nan_policy='omit',
                                fcn_args=(sigmaVals, simParams, fp, act_vals, thr_data))
 
@@ -685,33 +691,51 @@ def inverse_model_combined():  # Start this script
         with open(save_file_name, mode='w') as data_file:
             data_writer = csv.writer(data_file, delimiter=',', quotechar='"')
             if use_fwd_model:
-                header = ['Electrode', 'Rposition', 'Survival', 'ThreshMP', 'ThreshTP',
-                          'RpositionFit', 'SurvivalFit', 'RposError', 'SurvError', 'CT_position']
+                header = ['Electrode', 'ThreshMP', 'ThreshTP', 'Fitted ThreshMP', 'Fitted ThreshTP',
+                          'Rposition', 'RpositionFit', 'Survival', 'Fitted Survival', 'RposError', 'SurvError']
             else:
                 header = ['Electrode', 'ThreshMP', 'ThreshTP', 'Fitted ThreshMP', 'Fitted ThreshTP',
-                          'CT_position', 'RpositionFit', 'RposError', 'Fitted survival']
+                          'CT_position', 'RpositionFit', 'Survival (Nan)', 'Fitted survival', 'RposError',
+                          'SurvError (Nan)']
 
             data_writer.writerow(header)
             for row in range(0, NELEC):
                 t1 = row
-                t2 = rposvals[row]
-                t3 = survvals[row]
-                t4a = thrsim[0][0]
-                t4 = t4a[row]
-                t5a = thrsim[1][0]
-                t5 = t5a[row]
-                # t6 = opt_result.x[row]
-                # t7 = opt_result.x[NELEC + row]
-                t6 = fitrposvals[row]
-                t7 = fitsurvvals[row]
-                t8 = rposerrs[row]
-                t9 = survivalerrs[row]
+                t2 = thr_data['thrmp_db'][row]
+                t3 = thr_data['thrtp_db'][row]
+                t4 = thrsimmp[0][row]
+                t5 = thrsimtp[0][row]
                 if use_fwd_model:
-                    data_writer.writerow([t1, t2, t3, t4, t5, t6, t7, t8, t9])
+                    t6 = rposvals[row]
                 else:
-                    t10 = ct_vals[row]
-                    data_writer.writerow([row, thrtargs[0][0][row], thrtargs[1][0][row], thrsim[0][0][row],
-                                          thrsim[1][0][row], ct_vals[row], t6, t8, t7])
+                    if np.any(ct_vals):
+                        t6 = ct_vals[row]
+                t7 = fitrposvals[row]
+                if use_fwd_model:
+                    t8 = survvals[row]
+                else:
+                    t8 = np.NaN
+                t9 = fitsurvvals[row]
+                t10 = rposerrs[row]
+                if use_fwd_model:
+                    t11 = survivalerrs[row]
+                else:
+                    t11 = np.NaN
+
+                # t1 = row
+                # t2 = rposvals[row]
+                # t3 = survvals[row]
+                # t4a = thrsim[0][0]
+                # t4 = t4a[row]
+                # t5a = thrsim[1][0]
+                # t5 = t5a[row]
+                # # t6 = opt_result.x[row]
+                # # t7 = opt_result.x[NELEC + row]
+                # t6 = fitrposvals[row]
+                # t7 = fitsurvvals[row]
+                # t8 = rposerrs[row]
+                # t9 = survivalerrs[row]
+                data_writer.writerow([t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11])
 
             # Done with the values for each electrode
             thr_err_mp = np.abs(np.subtract(thrsim[0][0][:], thrtargs[0][0][:]))

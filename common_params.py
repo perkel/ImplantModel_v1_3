@@ -24,7 +24,7 @@ COCHLEA = {'source': 'manual', 'timestamp': [], 'radius': []}
 electrodes = {'source': 'manual', 'timestamp': [], 'zpos': ELEC_BASALPOS - np.arange(NELEC - 1, -1, -1) * espace,
               'rpos': []}
 NEURONS = {'act_ctr': ACTR, 'act_stdrel': ACT_STDREL, 'nsurvival': [], 'sidelobe': 1.0, 'neur_per_clust': 10,
-           'rlvl': [], 'rule': 'proportional', 'coef': 0.0, 'power': 1.0, 'thrTarg': THRTARG}
+           'rlvl': [], 'rule': 'proportional', 'coef': 0.0, 'power': 1.0, 'thrtarg': THRTARG}
 # For COEF convex: <0 | 0.4, 0.9  linear: 0 | 1; concave: >0 | 1.0, 1.8
 CHANNEL = {'source': 'manual', 'number': range(0, NELEC), 'config': 'pTP', 'sigma': 0.9, 'alpha': 0.5,
            'current': 10000000000.0}
@@ -91,6 +91,8 @@ INVOUTPUTDIR = INV_OUT_PRFIX + ACTR_TEXT + STD_TEXT + TARG_TEXT
 # FIELDTABLE = ['13August2023_MedResolution_Rext125_nonans.dat', '13August2023_MedResolution_Rext250_nonans.dat',
 #               '13August2023_MedResolution_Rext500.dat', '13August2023_MedResolution_Rext1500.dat',
 #               '13August2023_MedResolution_Rext2500_nonans.dat']
-# FIELDTABLE = '13August2023_MedResolution_Rext250_nonans.dat'
 # FIELDTABLE = '6Dec2023_MedResolution_Rext70_nonans.dat'
-FIELDTABLE = '19Dec2023_MedResolution_Rext500.dat'
+FIELDTABLE = '6Dec2023_MedResolution_Rext250.dat'
+# FIELDTABLE = '19Dec2023_MedResolution_Rext500.dat'
+# FIELDTABLE = '28Dec2023_MedResolution_Rext1250.dat'
+# FIELDTABLE = '7Dec2023_MedResolution_Rext2500_nonans.dat'

@@ -10,14 +10,14 @@ import os
 
 # params to vary
 # external resistivity, stdrel, number of active neurons, minimization approach
-res_ext = 500.0  # should double check that this matches the field table being used
+res_ext = 250.0  # should double-check that this matches the field table being used
 # specify some fixed params
 
-# start by cycling through stdrel, 3 of active neurons
-stdrel_vals = [1.0, 2.0, 4.0, 8.0]
-thrtarg_vals = [50, 100, 200]
-# stdrel_vals = [1.0, 2.0]
-# thrtarg_vals = [50, 100]
+# start by cycling through stdrel, # of active neurons
+stdrel_vals = [0.25, 0.5]
+thrtarg_vals = [10, 25]
+# stdrel_vals = [2.0, 8.0]
+# thrtarg_vals = [100, 200]
 
 n_std = len(stdrel_vals)
 n_thr = len(thrtarg_vals)
@@ -64,7 +64,7 @@ for stdrel in stdrel_vals:
         # Prepare to run FwdModel2D for espace = 0.85 mm
 
         espace = 0.85
-            # save file with key params
+        # save file with key params
         param_file = 'surv_params.txt'
         tempdata = np.zeros(4)  # 3 values
         tempdata[0] = res_ext
@@ -99,7 +99,7 @@ for stdrel in stdrel_vals:
 
         # Collect and collate results stats ( do this in a separate script)
 
-## text from trial
+# text from trial
         # TST_OUT_DIR = 'TSTOUT/'
         # if not os.path.exists(TST_OUT_DIR):
         #     os.mkdir(TST_OUT_DIR)
@@ -116,14 +116,14 @@ for stdrel in stdrel_vals:
 
         # Rename fwd and inverse output directories
         new_dir_suffix = '_R%d' % res_ext + '_' + 'std_%.1f' % stdrel + '_thr_%d' % thrtarg
-        #offset = len(cp.FWD_OUT_PRFIX)
+        # offset = len(cp.FWD_OUT_PRFIX)
         new_fwd_dir = cp.FWDOUTPUTDIR[:-1] + new_dir_suffix
         os.rename(cp.FWDOUTPUTDIR, new_fwd_dir)
-        #offset = len(cp.INV_OUT_PRFIX)
+        # offset = len(cp.INV_OUT_PRFIX)
         new_inv_dir = cp.INVOUTPUTDIR[:-1] + new_dir_suffix
         os.rename(cp.INVOUTPUTDIR, new_inv_dir)
 
 
 # Run a separate script to calculate mean & std for each subject across parameters
-# Want to find out best paramwter combination, and also how robust each subject fit is
+# Want to find out the best parameter combination, and also how robust each subject fit is
 # to changes in parameter sets

@@ -56,9 +56,9 @@ def integ_func(x, m_max, pratio, rad, reval, z, theta, relec):  # This is the Be
 # Main parameters to vary
 radius = 1.0  # cylinder radius
 res_int = 70.0  # internal resistivity
-res_ext = 500.0  # external resistivity
+res_ext = 1250.0  # external resistivity
 
-output_filename = '19Dec2023_MedResolution_Rext500.dat'
+output_filename = '28Dec2023_MedResolution_Rext1250.dat'
 
 pr = cProfile.Profile()
 
@@ -122,9 +122,9 @@ for i, rElec in enumerate(rElecRange):
         frac_done = (((i*len(fp['zEval'])) + m)*100)/(len(rElecRange) * len(fp['zEval']))
         print('# ', m, ' of ', nZ, ' z values. Approximately ', '%.2f' % frac_done, ' % complete.')
         # loop on y positions to get 2nd spatial derivative
-        for j, yVal in enumerate(yVals[0:n_yeval + 1]):
-            thisTheta = np.arctan(yVal / fp['reval'])
-            rPrime = np.sqrt((yVal ** 2) + (fp['reval'] ** 2))  # distance of eval point from center of cylinder
+        for j, y_val in enumerate(yVals[0:n_yeval + 1]):
+            thisTheta = np.arctan(y_val / fp['reval'])
+            rPrime = np.sqrt((y_val ** 2) + (fp['reval'] ** 2))  # distance of eval point from center of cylinder
             [itemp, error] = integ.quad(integ_func, fp['intStart'], fp['intEnd'], epsabs=fp['ITOL'], limit=1000,
                                         args=(fp['mMax'], resRatio, fp['cylRadius'], rPrime, thisZ, thisTheta, rElec))
             tempV = itemp / (2 * (np.pi ** 2))  # From Goldwyn eqn. 11
