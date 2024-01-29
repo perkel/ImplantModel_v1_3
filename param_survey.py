@@ -10,12 +10,12 @@ import os
 
 # params to vary
 # external resistivity, stdrel, number of active neurons, minimization approach
-res_ext = 250.0  # should double-check that this matches the field table being used
+res_ext = 500.0  # should double-check that this matches the field table being used
 # specify some fixed params
 
 # start by cycling through stdrel, # of active neurons
-stdrel_vals = [0.25, 0.5]
-thrtarg_vals = [10, 25]
+stdrel_vals = [0.25, 0.5, 1, 2, 4, 8]
+thrtarg_vals = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000]
 # stdrel_vals = [2.0, 8.0]
 # thrtarg_vals = [100, 200]
 
@@ -45,7 +45,7 @@ for stdrel in stdrel_vals:
         data_file.close()
 
         # Run FwdModel
-        fwd.fwd_model_4()
+        fwd.fwd_model_4('survey')
         # Run FwdModel2D for espace = 1.1 mm
         espace = 1.1
         # save file with key params
@@ -123,6 +123,8 @@ for stdrel in stdrel_vals:
         new_inv_dir = cp.INVOUTPUTDIR[:-1] + new_dir_suffix
         os.rename(cp.INVOUTPUTDIR, new_inv_dir)
 
+## clean up by removing param_file
+os.remove(param_file)
 
 # Run a separate script to calculate mean & std for each subject across parameters
 # Want to find out the best parameter combination, and also how robust each subject fit is

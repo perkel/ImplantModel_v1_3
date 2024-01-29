@@ -591,13 +591,13 @@ def inverse_model_combined():  # Start this script
 
             if use_fwd_model:
                 # result = minner.minimize(method='least-squares', options={'ftol': fit_tol, 'diff_step': 0.02})
-                # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
-                result = minner.minimize(method='Nelder-Mead', options={"fatol": fit_tol})
+                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                # result = minner.minimize(method='Nelder-Mead', options={"fatol": fit_tol})
 
                 #  result = minner.minimize(method='leastsq')
             else:  # use CT data
-                result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol})
-                # result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                result = minner.minimize(method='least_squares', ftol=fit_tol, diff_step=0.1)
+                # result = minner.minimize(method='Nelder-Mead', options={'fatol': fit_tol})
 
             for i in range(NELEC):  # store the results in the right place
                 vname = 'v_%i' % i

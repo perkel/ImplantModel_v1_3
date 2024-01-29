@@ -21,8 +21,6 @@ import csv
 import matplotlib.pyplot as plt
 import pickle
 from common_params import *
-import common_params
-import importlib
 import fig_2D_contour
 import plot_neuron_activation
 

@@ -4,7 +4,6 @@ import pickle
 import datetime
 import os
 import csv
-import importlib as imp
 import matplotlib.pyplot as plt
 #  These are local to this project
 import set_scenario as s_scen
@@ -12,23 +11,30 @@ import surv_full
 import get_thresholds as gt
 from common_params import *
 
-def fwd_model_4():
-    # load survey params
-    param_file = 'surv_params.txt'
-    tempdata = np.zeros(4)  # 4 values
-    if os.path.exists(param_file):
-        with open(param_file, newline='') as csvfile:
-            datareader = csv.reader(csvfile, delimiter=',')
-            ncol = len(next(datareader))
-            csvfile.seek(0)
-            for i, row in enumerate(datareader):
-                # Do the parsing
-                tempdata[i] = row[0]
 
-    res_ext = tempdata[0]
-    NEURONS['act_stdrel'] = tempdata[1]
-    NEURONS['thrtarg'] = tempdata[2]
-    espace = tempdata[3]  # should be overridden by scenario/subject
+def fwd_model_4(mode):
+
+    if mode == 'main':
+        pass  # proceed as normal
+    elif mode == 'survey':
+        # load survey params
+        param_file = 'surv_params.txt'
+        tempdata = np.zeros(4)  # 4 values
+        if os.path.exists(param_file):
+            with open(param_file, newline='') as csvfile:
+                datareader = csv.reader(csvfile, delimiter=',')
+                ncol = len(next(datareader))
+                csvfile.seek(0)
+                for i, row in enumerate(datareader):
+                    # Do the parsing
+                    tempdata[i] = row[0]
+        res_ext = tempdata[0]
+        NEURONS['act_stdrel'] = tempdata[1]
+        NEURONS['thrtarg'] = tempdata[2]
+        espace = tempdata[3]  # should be overridden by scenario/subject
+    else:  # should not happen
+        print('fwd_model called with unrecognized mode: ', mode)
+        exit()
 
     # Needs cleanup
     FASTZ = True  # use an interpolation method along z-axis
@@ -155,4 +161,4 @@ def fwd_model_4():
 
 
 if __name__ == '__main__':
-    fwd_model_4()
+    fwd_model_4('main')

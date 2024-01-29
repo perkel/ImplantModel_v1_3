@@ -77,10 +77,10 @@ ct_uncertainty = 0.1  # uncertainty for CT values in case one wants to display i
 # scenarios = ['A002R', 'A014L', 'A022L', 'A022R', 'A023R', 'A024L']
 # scenarios = ['A014L']
 # all subjects with CT data
-# scenarios = ['RampRposSGradual80', 'S22']
-scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80', 'S22', 'S27',
-            'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
-            'S55', 'S56', 'S57']
+scenarios = ['RampRposSGradual80', 'S22']
+# scenarios = ['Gradual80R00', 'RampRposS80', 'RampRposSGradual80', 'S22', 'S27',
+#             'S29', 'S38', 'S40', 'S41', 'S42', 'S43', 'S46', 'S47', 'S49R', 'S50', 'S52', 'S53', 'S54',
+#             'S55', 'S56', 'S57']
 
 # File locations
 FWD_OUT_PRFIX = 'FWD_OUTPUT/'
@@ -92,7 +92,10 @@ INVOUTPUTDIR = INV_OUT_PRFIX + ACTR_TEXT + STD_TEXT + TARG_TEXT
 #               '13August2023_MedResolution_Rext500.dat', '13August2023_MedResolution_Rext1500.dat',
 #               '13August2023_MedResolution_Rext2500_nonans.dat']
 # FIELDTABLE = '6Dec2023_MedResolution_Rext70_nonans.dat'
-FIELDTABLE = '6Dec2023_MedResolution_Rext250.dat'
-# FIELDTABLE = '19Dec2023_MedResolution_Rext500.dat'
+# FIELDTABLE = '20Jan2024_MedResolution_Rext125_nonans.dat'
+# FIELDTABLE = '6Dec2023_MedResolution_Rext250.dat'
+FIELDTABLE = '19Dec2023_MedResolution_Rext500.dat'
+# FIELDTABLE = '18Jan2024_MedResolution_Rext750_nonans.dat'
+# FIELDTABLE = '18Jan2024_MedResolution_Rext1000_nonans.dat'
 # FIELDTABLE = '28Dec2023_MedResolution_Rext1250.dat'
 # FIELDTABLE = '7Dec2023_MedResolution_Rext2500_nonans.dat'
