@@ -53,7 +53,8 @@ def plot_inverse_results(use_fwd_model, this_case, unsupervised):
     if use_fwd_model:
         [dist_corr, dist_corr_p] = stats.pearsonr(1 - rposvals, 1 - fitrposvals)
     else:
-        [dist_corr, dist_corr_p] = stats.pearsonr(1 - ct_vals, 1 - fitrposvals)
+        if np.any(ct_vals):
+            [dist_corr, dist_corr_p] = stats.pearsonr(1 - ct_vals, 1 - fitrposvals)
     title_text = 'Fit and actual positions; mean position error (mm): ' + '%.2f' % rpos_err_metric
     axs[1].plot(xvals[1:l_e] + 0.1, 1 - fitrposvals[1:l_e], marker='o', color='gray', label='fit')
     if use_fwd_model:
@@ -99,14 +100,15 @@ def plot_inverse_results(use_fwd_model, this_case, unsupervised):
 
     # test correlation figure
     if not use_fwd_model:
-        fig2, ax2 = plt.subplots()
-        ct_dist = 1 - ct_vals[1:l_e]
-        fit_dist = 1 - fitrposvals[1:l_e]
-        fig2 = plt.plot(ct_dist, fit_dist, 'o')
-        ax2.set(xlabel='CT distance (mm)', ylabel='fit distance (mm)')
-        ax2.set_xlim([0, 2])
-        ax2.set_ylim([0, 2])
-        fit_corr = np.corrcoef(ct_dist, fit_dist)
+        if np.any(ct_vals):
+            fig2, ax2 = plt.subplots()
+            ct_dist = 1 - ct_vals[1:l_e]
+            fit_dist = 1 - fitrposvals[1:l_e]
+            fig2 = plt.plot(ct_dist, fit_dist, 'o')
+            ax2.set(xlabel='CT distance (mm)', ylabel='fit distance (mm)')
+            ax2.set_xlim([0, 2])
+            ax2.set_ylim([0, 2])
+            fit_corr = np.corrcoef(ct_dist, fit_dist)
     if not unsupervised:
         plt.show()
 

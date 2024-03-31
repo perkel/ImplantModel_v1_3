@@ -10,14 +10,14 @@ import os
 
 # params to vary
 # external resistivity, stdrel, number of active neurons, minimization approach
-res_ext = 500.0  # should double-check that this matches the field table being used
+res_ext = 75200.0  # should double-check that this matches the field table being used
 # specify some fixed params
 
 # start by cycling through stdrel, # of active neurons
-stdrel_vals = [0.25, 0.5, 1, 2, 4, 8]
-thrtarg_vals = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000]
-# stdrel_vals = [2.0, 8.0]
-# thrtarg_vals = [100, 200]
+# stdrel_vals = [0.125, 0.2, 0.5, 1, 2, 4, 8, 16, 32]
+# thrtarg_vals = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000]
+stdrel_vals = [4]
+thrtarg_vals = [1000]
 
 n_std = len(stdrel_vals)
 n_thr = len(thrtarg_vals)
@@ -60,7 +60,7 @@ for stdrel in stdrel_vals:
             for i, row in enumerate(tempdata):
                 data_writer.writerow([tempdata[i]])
         data_file.close()
-        fwd2D.fwd_model_2D()
+        fwd2D.fwd_model_2D('survey')
         # Prepare to run FwdModel2D for espace = 0.85 mm
 
         espace = 0.85
@@ -76,7 +76,7 @@ for stdrel in stdrel_vals:
             for i, row in enumerate(tempdata):
                 data_writer.writerow([tempdata[i]])
         data_file.close()
-        fwd2D.fwd_model_2D()
+        fwd2D.fwd_model_2D('survey')
 
         # Set espace back to 1.1 in surv_params.txt
         espace = 0.85
@@ -94,7 +94,7 @@ for stdrel in stdrel_vals:
         data_file.close()
 
         # Run inverse model
-        inv_mod.inverse_model_combined()
+        inv_mod.inverse_model_combined('survey')
         print('back from inverse model')
 
         # Collect and collate results stats ( do this in a separate script)

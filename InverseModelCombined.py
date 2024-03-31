@@ -34,6 +34,7 @@ import get_thresholds as gt
 import subject_data
 import plot_inverse_results
 from common_params import *  # import common values across all models
+import common_params
 
 # User adjustable parameters
 fit_mode = 'combined'  # Which variable(s) to fit? Alternatives are 'combined', 'rpos' or 'survival'
@@ -42,6 +43,7 @@ unsupervised = True  # Makes & saves summary plots but does not display them and
 ifPlotGuessContours = False  # Option to plot initial guesses for parameters given to the fitting algorithm
 fit_tol = 0.1  # Fit tolerance for subject fits
 use_minimizer = True  # If true, uses the lmfit wrapper around scipy optimize. Otherwise vanilla scipy.minimize
+if_save_npy = True
 
 
 # For optimizing fit to thresholds need e_field, sim_params, sigvals
@@ -187,7 +189,33 @@ def find_closest(x1, y1, x2, y2):  # returns indices of the point on each curve 
     return min_idx
 
 
-def inverse_model_combined():  # Start this script
+def inverse_model_combined(mode):  # Start this script
+
+    if mode == 'main':
+        espace = common_params.espace
+        pass  # proceed as normal
+    elif mode == 'survey':
+        # load survey params
+        param_file = 'surv_params.txt'
+        tempdata = np.zeros(4)  # 4 values
+        if os.path.exists(param_file):
+            with open(param_file, newline='') as csvfile:
+                datareader = csv.reader(csvfile, delimiter=',')
+                ncol = len(next(datareader))
+                csvfile.seek(0)
+                for i, row in enumerate(datareader):
+                    # Do the parsing
+                    tempdata[i] = row[0]
+
+        res_ext = tempdata[0]
+        NEURONS['act_stdrel'] = tempdata[1]
+        NEURONS['thrtarg'] = tempdata[2]
+        espace = tempdata[3]
+    else:  # should not happen
+        print('fwd_model called with unrecognized mode: ', mode)
+        exit()
+
+
     # espace =
     if not os.path.isdir(INV_OUT_PRFIX):
         os.mkdir(INV_OUT_PRFIX)
@@ -195,24 +223,6 @@ def inverse_model_combined():  # Start this script
     else:
         if not os.path.isdir(INVOUTPUTDIR):
             os.mkdir(INVOUTPUTDIR)
-
-    # for param survey
-    param_file = 'surv_params.txt'
-    tempdata = np.zeros(4)  # 4 values
-    if os.path.exists(param_file):
-        with open(param_file, newline='') as csvfile:
-            datareader = csv.reader(csvfile, delimiter=',')
-            ncol = len(next(datareader))
-            csvfile.seek(0)
-            for i, row in enumerate(datareader):
-                # Do the parsing
-                tempdata[i] = row[0]
-
-    res_ext = tempdata[0]
-    NEURONS['act_stdrel'] = tempdata[1]
-    NEURONS['thrtarg'] = tempdata[2]
-    espace = tempdata[3]  # should be overridden by scenario/subject
-
 
     # First make sure that the 2D forward model has been run and load the data
     # It would be ideal to double check that it's the correct 2D data with identical parameters
@@ -710,6 +720,8 @@ def inverse_model_combined():  # Start this script
                 else:
                     if np.any(ct_vals):
                         t6 = ct_vals[row]
+                    else:
+                        t6 = np.nan
                 t7 = fitrposvals[row]
                 if use_fwd_model:
                     t8 = survvals[row]
@@ -769,7 +781,9 @@ def inverse_model_combined():  # Start this script
                 txt_string = subject
 
             plot_inverse_results.plot_inverse_results(use_fwd_model, txt_string, unsupervised)
-
+        if not if_save_npy:
+            os.remove(save_file_name)
+            os.remove(INVOUTPUTDIR + scenario + '_simParams_inv.npy')
         # Save individual subject file
         # scenario, threshold error metric, and for CT cases: rpos error matric
         # print('saving this subject\'s fit data in CSV form')
@@ -818,16 +832,17 @@ def inverse_model_combined():  # Start this script
             else:
                 data_writer.writerow([scenarios[row], '%.4f' % thresh_err_summary[row, 0],
                                       '%.4f' % thresh_err_summary[row, 1],
-                                      '%.4f' % rpos_err_summary[row], ['NaN'],
+                                      '%.4f' % rpos_err_summary[row], '%.4f' % np.nan,
                                       '%.4f' % dist_corr[row], '%.5f' % dist_corr_p[row]])
         data_file.close()
 
     # save summary binary data file
     # scenario, threshold error metric, and for CT cases: rpos error matric
-    summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_results.npy'
-    np.save(summary_file_name, np.array([scenarios, rpos_summary], dtype=object))
+    if if_save_npy:
+        summary_file_name = INVOUTPUTDIR + 'summary_inverse_fit_results.npy'
+        np.save(summary_file_name, np.array([scenarios, rpos_summary], dtype=object))
     print('Done with saving summary files')
 
 
 if __name__ == '__main__':
-    inverse_model_combined()
+    inverse_model_combined(mode = 'main')  # main or 'survey'

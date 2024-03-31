@@ -227,7 +227,7 @@ def fig_2D_contour():
     axs[1, 0].axes.set_xlabel('Electrode distance (mm)')
     axs[1, 0].axes.set_ylabel('Threshold (dB)')
     axs[1, 0].axes.set_xlim([0.1, 1.9])
-    axs[1, 0].axes.set_ylim([20, 80])
+    axs[1, 0].axes.set_ylim([40, 100])
     axs[1, 0].set_xticks([0.4, 0.8, 1.2, 1.6])
 
     axs[1, 1].plot(surv_vals, mono_thr[:, high_rpos_idx], color='black', linestyle='solid')
@@ -236,7 +236,7 @@ def fig_2D_contour():
     axs[1, 1].plot(surv_vals, tripol_thr[:, low_rpos_idx], color='gray', linestyle='dashed')
     axs[1, 1].axes.set_xlabel('Fractional neuronal density')
     axs[1, 1].axes.set_xlim([0.1, 0.9])
-    axs[1, 1].axes.set_ylim([20, 80])
+    axs[1, 1].axes.set_ylim([40, 100])
 
     plt.savefig('Fig4_2D_contour.eps', format='eps')
 
@@ -285,12 +285,12 @@ def fig_2D_contour():
         tpy = np.zeros(ntp)
 
         for j in range(0, nmp):  # Should be able to do this without for loops
-            mpx[j] = mpcontour[j][0]
-            mpy[j] = mpcontour[j][1]
+            mpx[j] = mpcontour[0][j][0]
+            mpy[j] = mpcontour[0][j][1]
 
         for j in range(0, ntp):
-            tpx[j] = tpcontour[j][0]
-            tpy[j] = tpcontour[j][1]
+            tpx[j] = tpcontour[0][j][0]
+            tpy[j] = tpcontour[0][j][1]
 
         x, y = intsec.intersection(mpx, mpy, tpx, tpy)  # find intersection(s)
         if i > 0 and len(x) > 0:

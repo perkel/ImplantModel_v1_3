@@ -21,27 +21,36 @@ import csv
 import matplotlib.pyplot as plt
 import pickle
 from common_params import *
+import common_params
 import fig_2D_contour
 import plot_neuron_activation
 
+def fwd_model_2D(mode):
 
-def fwd_model_2D():
+    if mode == 'main':
+        espace = common_params.espace
+        pass  # proceed as normal
+    elif mode == 'survey':
+        # load survey params
+        param_file = 'surv_params.txt'
+        tempdata = np.zeros(4)  # 4 values
+        if os.path.exists(param_file):
+            with open(param_file, newline='') as csvfile:
+                datareader = csv.reader(csvfile, delimiter=',')
+                ncol = len(next(datareader))
+                csvfile.seek(0)
+                for i, row in enumerate(datareader):
+                    # Do the parsing
+                    tempdata[i] = row[0]
 
-    param_file = 'surv_params.txt'
-    tempdata = np.zeros(4)  # 4 values
-    if os.path.exists(param_file):
-        with open(param_file, newline='') as csvfile:
-            datareader = csv.reader(csvfile, delimiter=',')
-            ncol = len(next(datareader))
-            csvfile.seek(0)
-            for i, row in enumerate(datareader):
-                # Do the parsing
-                tempdata[i] = row[0]
+        res_ext = tempdata[0]
+        NEURONS['act_stdrel'] = tempdata[1]
+        NEURONS['thrtarg'] = tempdata[2]
+        espace = tempdata[3]
+    else:  # should not happen
+        print('fwd_model called with unrecognized mode: ', mode)
+        exit()
 
-    res_ext = tempdata[0]
-    NEURONS['act_stdrel'] = tempdata[1]
-    NEURONS['thrtarg'] = tempdata[2]
-    espace = tempdata[3]
 
     # We depend on a voltage and activation tables calculated using
     # voltage_calc.py and saved as a .dat file
@@ -196,4 +205,4 @@ def fwd_model_2D():
 
 
 if __name__ == '__main__':
-    fwd_model_2D()
+    fwd_model_2D('main')  # mode is 'main' or 'survey'
