@@ -41,7 +41,7 @@ def fig_scenario_inverse_results():
         ax.spines.top.set_visible(False)
         xlim = ax.get_xlim()
         ax.set_xticks([2, 4, 6, 8, 10, 12, 14])
-        ax.set_ylim(20, 70)
+        ax.set_ylim(50, 90)
         if i == 0:
             ax.set_ylabel('Threshold (dB)', font='Helvetica')
 

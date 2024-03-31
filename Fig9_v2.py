@@ -25,6 +25,7 @@ def fig9_summary():
     rpos_fit_vals = np.zeros((nscen, n_elec))
     thresh_err_summary = np.zeros((nscen, 2))
     rpos_err_summary = np.zeros(nscen)
+    density_err_summary = np.zeros(nscen)
     dist_corr = np.zeros(nscen)
     dist_corr_p = np.zeros(nscen)
 
@@ -41,7 +42,8 @@ def fig9_summary():
                 pass
             else:
                 [_, thresh_err_summary[row-1, 0], thresh_err_summary[row-1, 1],
-                 rpos_err_summary[row-1], dist_corr[row-1], dist_corr_p[row-1]] = row_data
+                 rpos_err_summary[row-1], aaa_temp, dist_corr[row-1], dist_corr_p[row-1]] = row_data
+                print(aaa_temp)
 
         data_file.close()
 
