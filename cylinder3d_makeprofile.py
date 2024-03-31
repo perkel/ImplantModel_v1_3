@@ -58,7 +58,7 @@ def cylinder3d_makeprofile(field_table, field_params, sim_params):
             v_interp.append(cylinder_interpolate(field_table, field_params, sim_params, eidx))
             v_interp.append(np.zeros(field_table.shape[1]))
             vloci = sim_params['electrodes']['zpos'][eidx + np.zeros(3, dtype=int)]
-                         
+
         vscaling = [-sigma*(1-alpha), 1.0, -sigma*alpha]
 
     else:

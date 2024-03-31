@@ -37,11 +37,17 @@ def get_thresholds(field_table, field_params, sim_params):
 
     if nelec == 1:
         elec_vals = range(7, 8)  # use electrode 7 to be in middle of cochlear length
+        # set the position manually in the center of the array
+        espace = sim_params['electrodes']['zpos'][elec_vals[0]] - sim_params['electrodes']['zpos'][elec_vals[0] - 1]
+        neuron_midpoint = np.max(sim_params['grid']['z'])/2.0
+        sim_params['electrodes']['zpos'][elec_vals[0]] = neuron_midpoint
+        sim_params['electrodes']['zpos'][elec_vals[0]-1] = neuron_midpoint - espace
+        sim_params['electrodes']['zpos'][elec_vals[0]+1] = neuron_midpoint + espace
     else:
         if sim_params['channel']['sigma'] == 0.0:  # monopolar
             elec_vals = range(0, nelec)
         else:
-            elec_vals = range(1, nelec - 1)
+            elec_vals = range(1, nelec - 1)  # Can't do tripolar stimulation at end electrodes
 
     nvalarray = []
     nvals = 0
@@ -49,7 +55,7 @@ def get_thresholds(field_table, field_params, sim_params):
     for j in elec_vals:  # Loop on stimulating electrodes
         sim_params['channel']['number'] = j
         aprofile = c3dm.cylinder3d_makeprofile(field_table, field_params, sim_params)
-        # This is the biophysically correct behavior
+        # This is the biophysically correct behavior, to include sidelobes
         e_field = abs(aprofile)  # uV^2/mm^2
 
         # We can remove sidelobes by setting negative values to zero
